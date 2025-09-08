@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+from pathlib import Path
 import base64, util
 import requests
 import os
@@ -10,7 +11,7 @@ load_dotenv()
 cam_url = os.getenv("CAMERA_SD_URL")
 rec_db = os.getenv("RECDB")
 img_db = os.getenv("IMGDB")
-
+db_suffix = os.getenv("DBSUFFIX")
 
 def get_index_page():
     """
@@ -20,36 +21,39 @@ def get_index_page():
     return response.text
 
 
-def download_and_process_database(date, database_name):
+def download_and_process_database(date, data_media_name):
     """
     Gets the recording database from the camera, processes it, and then stores it on the server in `files/{date}/recdata.db`.
 
     Parameters:
     date (string): The date of the database in the format of yyyymmdd.
-    database_name (string): What database to download and process. "rec" for the recording database and "img" for the image database.
+    data_media_name (string): What database to download and process. "rec" for the recording database and "img" for the image database.
 
     Return: The path the database was stored to. It should be `files/{date}/{database_name}data.db`.
     """
 
     file_type = ""
 
-    if database_name != "rec" and database_name != "img":
+    if data_media_name != "rec" and data_media_name != "img":
         raise ValueError("Database name must be 'rec' or 'img'")
 
-    if database_name == "rec":
+    if data_media_name == "rec":
         file_type = "265"
-    if database_name == "img":
+    if data_media_name == "img":
         file_type = "jpg"
 
-    rec_db_url = f"{cam_url}/{date}/{database_name}data.db"
+    rec_db_url = f"{cam_url}/{date}/{data_media_name}data.db"
     response = requests.get(rec_db_url, util.get_headers())
     response.raise_for_status()
 
     file_bytes = response.content
 
-    lines = process_database_bytes(file_bytes, file_type)
+    print(file_bytes)
 
-    file_path = f"files/{date}/{database_name}data.txt"
+    lines = process_database_bytes(file_bytes, file_type)
+    print(lines)
+    file_path = f"files/{date}/{data_media_name}data.db"  # Keep as DB, so it's the same as the camera
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
     with open(file_path, "a") as f:
         for line in lines:
@@ -87,10 +91,47 @@ def process_database_bytes(database_bytes, file_type):
 
     for s in matches:
         s = s.decode('ascii')
-        sd_stripped_matches.append(s[3:]) # Removes sd/ in matches
+        sd_stripped_matches.append(s[3:])  # Removes sd/ in matches
 
     return sd_stripped_matches
 
-"""
-    D
-"""
+
+def load_database_file(date, data_media_name):
+    """
+    Gets database server, processes it, and then stores it on the server in `files/{date}/recdata.db`.
+
+    Parameters:
+    date (string): The date of the database in the format of yyyymmdd.
+    data_media_name (string): What database's contents to get. "rec" for the recording database and "img" for the image database.
+
+    Return: A list of all file names found in the database.
+    """
+    if data_media_name != "rec" and data_media_name != "img":
+        raise ValueError("Database name must be 'rec' or 'img'")
+
+    file_path = Path(f"files/{date}/{data_media_name}{db_suffix}")
+    if not file_path.exists():
+        download_and_process_database(date, data_media_name)
+    if file_path.exists():
+        content = file_path.read_text()
+        return content.split("\n")
+
+def download_file(date, media_subfolder, file_name):
+    """
+    Downloads the file from the camera.
+
+    Parameters:
+        date (string): The date of the database in the format of yyyymmdd.
+        media_subfolder (string): What subfolder to download the images from, e.g. record000 or images000.
+        file_name (string): What file to download.
+    """
+
+    address = f"{cam_url}/{date}/{media_subfolder}/{file_name}"
+    print("at call")
+    response = requests.get(address, util.get_headers())
+    print("past call")
+    if response.status_code != 200:
+        raise Exception(f"Couldnt get file off camera. Status code: {response.status_code}")
+    return response.content
+
+
