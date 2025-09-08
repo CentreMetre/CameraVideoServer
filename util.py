@@ -19,7 +19,11 @@ def get_current_dates_from_sd_page(html):
     for a_tag in soup.find_all('a'):
         date_text = a_tag.get_text().strip()
         date_text = date_text.rstrip('/') # Strips the trailing slash
-        dates.append(date_text)
+        try:
+            int(date_text) # Test to see if it is a
+            dates.append(date_text)
+        except ValueError:
+            continue
 
     return dates
     
