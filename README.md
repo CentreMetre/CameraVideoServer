@@ -12,3 +12,4 @@ CameraServer is used for providing a better web interface from my security camer
     - [ ] Implement storage limit warning (2)
     - [ ] Implement deleting old files when storage is full (2)
 - [X] Implement Camera DB files processing (2)
+- [ ] Implement path traversal protection (2)
