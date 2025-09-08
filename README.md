@@ -3,11 +3,12 @@ CameraServer is used for providing a better web interface from my security camer
 # Features/Task Checklist
  (Importance, lower more important/easier)
 ## Frontend
-- [ ] Create Frontend Web Page(s) (1) 
+- [/] Create Frontend Web Page(s) (1) 
 ## Backend/Server
-- [ ] Create Backend Endpoints (1)
+- [/] Create Backend Endpoints (1)
 - [ ] Implement MP4 file wrapping (1)
     - [ ] Check if the file already exists on the server(1)
     - [ ] Download file to server (2)
     - [ ] Implement storage limit warning (2)
     - [ ] Implement deleting old files when storage is full (2)
+- [X] Implement Camera DB files processing (2)
