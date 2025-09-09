@@ -17,3 +17,15 @@ CameraServer is used for providing a better web interface from my security camer
 
 Unsure of if to ever wrap because it has problems in browsers. If ever sent to someone as needed and its played in browser it wont work.
 Encoding is the best way to go.
+
+Will store encoded files like:
+CameraServer/
+├─ files/
+│  ├─ 20250901/
+│  │  ├─ images000/
+│  │  │  ├─ A25090106224300.jpg
+│  │  ├─ record000/
+│  │  │  ├─ A250901_062244_062258.mp4
+│  │  │  ├─ P250901_000000_001000.mp4
+│  │  ├─ imgdata.db
+│  │  ├─ recdata.db
