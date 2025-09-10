@@ -2,6 +2,7 @@ import subprocess
 
 from flask import Flask, render_template, jsonify, send_file
 
+import image
 import video
 from user import user_bp
 from dotenv import load_dotenv
@@ -50,24 +51,31 @@ def get_file(date, media_subfolder, file_name, action):
     """
     Gets the specified file from the specified date and location.
     """
+
     if action != "view" and action != "download":
         return jsonify({"error": "Invalid action. 'view' or 'download' are required"}), 400
 
-    base_path = os.path.abspath("files")
-    requested_path = os.path.abspath(os.path.join(base_path, date, media_subfolder, file_name))
-    requested_mp4_path = requested_path[:-3]
-    requested_mp4_path += "mp4"
+    file_type = file_name[-3:]
 
-    if not requested_path.startswith(base_path):
-        return jsonify({"error": "Illegal traversal"}), 403
+    if file_type != "265" or file_type != "jpg":
+        return jsonify({"error": "Invalid file type. 'jpg' or '265' are required."}), 400
 
-    if not os.path.isfile(requested_mp4_path):
+    requested_path = util.create_abs_path(date, media_subfolder, file_name)
+
+    if file_type == "265":
+        video.handle_video_request(date, media_subfolder, file_name)
+    if file_type == "jpg":
+        image.handle_image_request(date, media_subfolder, file_name)
+    if file_type != "265" and file_type != "jpg":
+        return jsonify({"error": "Invalid file type. 'jpg' or '265' are required"}), 400
+
+    if not os.path.isfile(requested_path):
         file = camera.download_file(date, media_subfolder, file_name)
         file_path = video.wrap_265_with_mp4_and_save(date, media_subfolder, file_name, file)
-        # video.write_media_file(date, media_subfolder, file_name, file)
-        # TODO: Write file if its a jpg
+        video.encode_265_to_264_mp4_and_save(date, media_subfolder, file_name, file)
 
-    file = open(requested_mp4_path, "rb")
+
+        # TODO: Write file if its a jpg
 
     if file_name.endswith("jpg"):
         mime_type = "image/jpeg"
