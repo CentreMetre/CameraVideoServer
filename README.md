@@ -19,6 +19,7 @@ Unsure of if to ever wrap because it has problems in browsers. If ever sent to s
 Encoding is the best way to go.
 
 Will store encoded files like:
+```
 CameraServer/
 ├─ files/
 │  ├─ 20250901/
@@ -29,3 +30,4 @@ CameraServer/
 │  │  │  ├─ P250901_000000_001000.mp4
 │  │  ├─ imgdata.db
 │  │  ├─ recdata.db
+```
