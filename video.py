@@ -1,3 +1,4 @@
+from logger_conf import logger
 import subprocess
 import os
 import tempfile
@@ -5,15 +6,17 @@ from pathlib import Path
 
 import camera
 import util
+from logger_conf import logger
 
 
-def encode_265_to_264_mp4_and_save(date, media_subfolder, file_name, h265_bytes):
+def encode_265_to_264_mp4_and_save(date, media_subfolder, file_name, h265_bytes, force_overwrite=False):
     """
     Encodes an h265 video file to h264 and wraps it in mp4.
 
 
     """
-    # ffmpeg -i input.mp4 -c:v libx264 -preset slow -crf 23 -c:a copy output.mp4
+
+    logger.debug(f"In encode function.")
 
     base_path = "files"
     mp4_file_name = file_name[:-3]
@@ -21,6 +24,36 @@ def encode_265_to_264_mp4_and_save(date, media_subfolder, file_name, h265_bytes)
     output_path = os.path.abspath(os.path.join(base_path, date, media_subfolder, mp4_file_name))
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
+    # command = [
+    #     "ffmpeg",
+    #     "-i", "pipe:0",
+    #     "-c:v", "libx264",
+    #     "-c:a", "copy",
+    #     "-preset", "veryfast",
+    #     "-crf", "23",
+    #     "-progress", "pipe:2",
+    #     "-nostats",
+    #     "-f", "hevc",
+    #     "-y" if force_overwrite else "-n",  # overwrite if force else no overwrite
+    #     output_path
+    # ]
+
+    command = [
+        "ffmpeg",
+        "-f", "hevc",              # input format: raw H.265/HEVC
+        "-i", "pipe:0",            # read from stdin
+        "-c:v", "libx264",         # encode to H.264
+        "-preset", "fast",          # optional: encoding speed/efficiency
+        "-pix_fmt", "yuv420p",      # ensure compatibility
+        "-y" if force_overwrite else "-n",  # overwrite if force else no overwrite
+        output_path
+    ]
+
+    logger.debug("Encoding video.")
+    process = subprocess.run(command, input=h265_bytes, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    logger.debug("Finished encoding.")
+
+    return output_path
 
 def wrap_265_with_mp4_and_save(date, media_subfolder, file_name, h265_bytes):
     """
@@ -77,8 +110,10 @@ def handle_video_request(date, media_subfolder, file_name):
     requested_mp4_path = requested_path[:-3]
     requested_mp4_path += "mp4"
     if not Path(requested_mp4_path).exists():
-        video_file = camera.download_file(date, media_subfolder, file_name)  # Split from at and unpack for variables
+        logger.debug(f"Path: {requested_mp4_path} not found.")
+        video_file = camera.download_file(date, media_subfolder, file_name)
         encode_265_to_264_mp4_and_save(date, media_subfolder, file_name, video_file)
 
-    mp4_file = util.load_file(requested_mp4_path)
-    return mp4_file
+    # Make it return the file path instead of the file since flask can load and send it easier.
+    return requested_mp4_path
+

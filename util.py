@@ -118,3 +118,4 @@ def write_media_file(date, media_subfolder, file_name, file_bytes):
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
     with open(local_path, "wb") as f:
         f.write(file_bytes.content)
+

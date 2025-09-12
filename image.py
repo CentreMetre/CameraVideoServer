@@ -6,6 +6,8 @@ from pathlib import Path
 def handle_image_request(date, media_subfolder, file_name):
     """
     Handles the request for a video. Saves it if it doesn't exist on server.
+
+    Returns (bytes): The image file in bytes
     """
     requested_path = util.create_abs_path(date, media_subfolder, file_name)
     if not Path(requested_path).exists():

@@ -1,10 +1,13 @@
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from pathlib import Path
+from logger_conf import logger
 import base64, util
 import requests
 import os
 import re
+
+import error
 
 load_dotenv()
 
@@ -12,6 +15,7 @@ cam_url = os.getenv("CAMERA_SD_URL")
 rec_db = os.getenv("RECDB")
 img_db = os.getenv("IMGDB")
 db_suffix = os.getenv("DBSUFFIX")
+
 
 def get_index_page():
     """
@@ -43,8 +47,17 @@ def download_and_process_database(date, data_media_name):
         file_type = "jpg"
 
     rec_db_url = f"{cam_url}/{date}/{data_media_name}data.db"
-    response = requests.get(rec_db_url, util.get_headers())
-    response.raise_for_status()
+
+    try:
+        response = requests.get(rec_db_url, util.get_headers())
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        if date in get_index_page():
+            error.handle_404(e, f"Even though {date} is reported as being on the camera, "
+                                f"the database could not be downloaded.")
+            error.log_error(e, note=f"Even though {date} is reported as being on the camera, "
+                                    f"the database could not be downloaded.")
+        raise Exception(404)  # (e, note=f"That date doesn't exist on the camera.")
 
     file_bytes = response.content
 
@@ -107,7 +120,7 @@ def load_database_file(date, data_media_name):
     Return: A list of all file names found in the database.
     """
     if data_media_name != "rec" and data_media_name != "img":
-        raise ValueError("Database name must be 'rec' or 'img'")
+        raise ValueError("Database name must be 'rec' or 'img'. You inputted '" + data_media_name + "' instead.")
 
     file_path = Path(f"files/{date}/{data_media_name}{db_suffix}")
     if not file_path.exists():
@@ -115,6 +128,7 @@ def load_database_file(date, data_media_name):
     if file_path.exists():
         content = file_path.read_text()
         return content.split("\n")
+
 
 def download_file(date, media_subfolder, file_name):
     """
@@ -127,11 +141,9 @@ def download_file(date, media_subfolder, file_name):
     """
 
     address = f"{cam_url}/{date}/{media_subfolder}/{file_name}"
-    print("at call")
+    logger.debug(f"Calling {address} to download file")
     response = requests.get(address, util.get_headers())
-    print("past call")
+    logger.debug(f"Finished Downloading.")
     if response.status_code != 200:
         raise Exception(f"Couldnt get file off camera. Status code: {response.status_code}")
     return response.content
-
-
