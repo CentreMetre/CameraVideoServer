@@ -3,7 +3,10 @@ CameraServer is used for providing a better web interface from my security camer
 # Features/Task Checklist
  (Importance, lower more important/easier)
 ## Frontend
-- [/] Create Frontend Web Page(s) (1) 
+- [/] Create Frontend Web Page(s) (1)
+- [ ] Implement error handling
+  - [ ] HTTP Errors (4xx and 5xx)
+
 ## Backend/Server
 - [/] Create Backend Endpoints (1)
 - [X] Implement MP4 file wrapping (1)
@@ -14,6 +17,8 @@ CameraServer is used for providing a better web interface from my security camer
 - [ ] Implement MP4 file encoding (1) (encoding needed for browser play)
 - [X] Implement Camera DB files processing (2)
 - [ ] Implement path traversal protection (2)
+- [ ] Implement error handling
+  - [ ] HTTP Errors (4xx and 5xx)
 
 Unsure of if to ever wrap because it has problems in browsers. If ever sent to someone as needed and its played in browser it wont work.
 Encoding is the best way to go.
