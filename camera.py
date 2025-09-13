@@ -61,10 +61,8 @@ def download_and_process_database(date, data_media_name):
 
     file_bytes = response.content
 
-    print(file_bytes)
 
     lines = process_database_bytes(file_bytes, file_type)
-    print(lines)
     file_path = f"files/{date}/{data_media_name}data.db"  # Keep as DB, so it's the same as the camera
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 

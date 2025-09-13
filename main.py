@@ -59,7 +59,7 @@ def get_file(date, media_subfolder, file_name, action):
     requested_path = util.create_abs_path(date, media_subfolder, file_name)
 
     if file_type == "265":  # Handles video file requests
-        file = video.handle_video_request(date, media_subfolder, file_name)
+        file, file_ready = video.handle_video_request(date, media_subfolder, file_name)
         mime_type = "video/mp4"
         file_name = file_name[:-3] + "mp4"  # Change extension to MP4 since it is now an MP4
     if file_type == "jpg":  # Handles image file requests
@@ -68,14 +68,18 @@ def get_file(date, media_subfolder, file_name, action):
     if file_type != "265" and file_type != "jpg":
         return jsonify({"error": "Invalid file type. 'jpg' or '265' are required"}), 400
 
-    if action == "view":
-        return send_file(file,
-                         mimetype=mime_type)
-    if action == "download":
-        return send_file(file,
-                         mimetype=mime_type,
-                         as_attachment=True,
-                         download_name=file_name)
+    if file_ready:
+        if action == "view":
+            return send_file(file,
+                             mimetype=mime_type)
+        if action == "download":
+            return send_file(file,
+                             mimetype=mime_type,
+                             as_attachment=True,
+                             download_name=file_name)
+
+    if not file_ready:
+        return jsonify({"message": "Video is found and exists but is being encoded."}), 202
 
 
 app.run(debug=is_debug)

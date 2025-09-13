@@ -24,19 +24,7 @@ def encode_265_to_264_mp4_and_save(date, media_subfolder, file_name, h265_bytes,
     output_path = os.path.abspath(os.path.join(base_path, date, media_subfolder, mp4_file_name))
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-    # command = [
-    #     "ffmpeg",
-    #     "-i", "pipe:0",
-    #     "-c:v", "libx264",
-    #     "-c:a", "copy",
-    #     "-preset", "veryfast",
-    #     "-crf", "23",
-    #     "-progress", "pipe:2",
-    #     "-nostats",
-    #     "-f", "hevc",
-    #     "-y" if force_overwrite else "-n",  # overwrite if force else no overwrite
-    #     output_path
-    # ]
+    tmp_path = output_path + ".tmp"
 
     command = [
         "ffmpeg",
@@ -44,14 +32,23 @@ def encode_265_to_264_mp4_and_save(date, media_subfolder, file_name, h265_bytes,
         "-i", "pipe:0",            # read from stdin
         "-c:v", "libx264",         # encode to H.264
         "-preset", "fast",          # optional: encoding speed/efficiency
-        "-pix_fmt", "yuv420p",      # ensure compatibility
+        "-pix_fmt", "yuv420p",
+        "-f", "mp4", # Ensures its outputted to mp4
         "-y" if force_overwrite else "-n",  # overwrite if force else no overwrite
-        output_path
+        tmp_path
     ]
 
     logger.debug("Encoding video.")
     process = subprocess.run(command, input=h265_bytes, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     logger.debug("Finished encoding.")
+
+    if process.returncode != 0:
+        logger.error(f"FFmpeg encoding failed: {process.stderr.decode()}")
+        if Path(tmp_path).exists():
+            Path(tmp_path).unlink()  # Deletes file if it exists but failed.
+        raise RuntimeError(f"FFmpeg encoding failed: {process.stderr.decode()}")
+
+    Path(tmp_path).rename(output_path)
 
     return output_path
 
@@ -106,6 +103,7 @@ def handle_video_request(date, media_subfolder, file_name):
     """
     Handles the request for a video. Saves it if it doesn't exist on server.
     """
+    is_ready = True
     requested_path = util.create_abs_path(date, media_subfolder, file_name)
     requested_mp4_path = requested_path[:-3]
     requested_mp4_path += "mp4"
@@ -113,7 +111,11 @@ def handle_video_request(date, media_subfolder, file_name):
         logger.debug(f"Path: {requested_mp4_path} not found.")
         video_file = camera.download_file(date, media_subfolder, file_name)
         encode_265_to_264_mp4_and_save(date, media_subfolder, file_name, video_file)
+        is_ready = True
+
+    if Path(requested_mp4_path + ".tmp").exists():
+        is_ready = False
 
     # Make it return the file path instead of the file since flask can load and send it easier.
-    return requested_mp4_path
+    return requested_mp4_path, is_ready
 
