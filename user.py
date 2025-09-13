@@ -5,6 +5,8 @@ import requests
 from dotenv import load_dotenv
 from flask import session, jsonify, request, render_template, Blueprint, redirect, url_for
 
+from logger_conf import logger
+
 load_dotenv()
 url = os.getenv("CAMERA_SD_URL")
 
@@ -13,7 +15,7 @@ user_bp = Blueprint('user', __name__)
 
 @user_bp.route("/login", methods=['GET'])
 def get_login_page():
-    return render_template("login.html")
+    return render_template("login.html", credentials=session.get('credentials'))
 
 
 @user_bp.route("/auth/login", methods=['POST'])
@@ -29,14 +31,7 @@ def auth_user():
         "Authorization": f"Basic {encoded_credentials}",
     }
 
-    print(username)
-    print(password)
-    print(headers)
-
     response = requests.get(url, headers=headers)
-
-    print(response.status_code)
-    print(response.text)
 
     if response.status_code == 200:
         session['credentials'] = encoded_credentials
