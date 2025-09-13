@@ -83,6 +83,7 @@ def get_file(date, media_subfolder, file_name, action):
         return jsonify({"message": "Video is found and exists but is being encoded."}), 202
 
 
+os.makedirs("files/", exist_ok=True)
 app.run(debug=is_debug)
 error.register_error_handlers(app)
 # TODO: Have to encode, browsers cant play mp4 wrapped 265
