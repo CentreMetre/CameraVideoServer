@@ -6,6 +6,8 @@ import camera
 from bs4 import BeautifulSoup
 from functools import wraps
 
+from logger_conf import logger
+
 
 def get_current_dates_from_sd_page(html):
     """
@@ -114,8 +116,21 @@ def create_abs_path(date, media_subfolder, file_name):
 
 
 def write_media_file(date, media_subfolder, file_name, file_bytes):
+    """
+    Save a file to the server.
+
+    Parameters:
+        date (string): the date to save the file.
+        media_subfolder (string): the subfolder to save the file.
+        file_name (string): the name of the file.
+        file_bytes (bytes): the bytes of the file.
+    """
+    logger.debug(f"Saving file of length {len(file_bytes)} to {date}/{media_subfolder}/{file_name}")
+
     local_path = f"files/{date}/{media_subfolder}/{file_name}"
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
     with open(local_path, "wb") as f:
-        f.write(file_bytes.content)
+        f.write(file_bytes)
+
+    logger.debug(f"Wrote {len(file_bytes)} bytes to {local_path}")
 

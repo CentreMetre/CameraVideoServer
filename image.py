@@ -14,5 +14,4 @@ def handle_image_request(date, media_subfolder, file_name):
         image_file = camera.download_file(date, media_subfolder, file_name)  # Split from at and unpack for variables
         util.write_media_file(date, media_subfolder, file_name, image_file)
 
-    jpg_file = util.load_file(requested_path)
-    return jpg_file
+    return requested_path

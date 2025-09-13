@@ -65,6 +65,7 @@ def get_file(date, media_subfolder, file_name, action):
     if file_type == "jpg":  # Handles image file requests
         file = image.handle_image_request(date, media_subfolder, file_name)
         mime_type = "image/jpeg"
+        file_ready = True
     if file_type != "265" and file_type != "jpg":
         return jsonify({"error": "Invalid file type. 'jpg' or '265' are required"}), 400
 
