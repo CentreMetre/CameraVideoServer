@@ -1,0 +1,20 @@
+.grid {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 3rem;
+    place-items: center;
+    justify-items: center;
+}
+
+label {
+    
+    font-family: Arial, sans-serif;
+}
+
+input[type="date"], input[type="datetime-local"] {
+    padding: 0.2rem;
+    font-family: Arial, sans-serif;
+    border: 2px solid rgb(204, 204, 204);
+    border-radius: 5px;
+    width: 150px;
+}
