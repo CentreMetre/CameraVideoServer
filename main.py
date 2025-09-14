@@ -41,7 +41,7 @@ def get_media_list_from_date(date, media_type):
     if media_type != "rec" and media_type != "img":
         return jsonify({"error": "Invalid media type. 'rec' or 'img' are required."}), 400
 
-    database = camera.load_database_file(date, media_type)
+    database = util.load_database_file(date, media_type)
     return jsonify(database)
 
 
@@ -81,6 +81,30 @@ def get_file(date, media_subfolder, file_name, action):
 
     if not file_ready:
         return jsonify({"message": "Video is found and exists but is being encoded."}), 202
+
+@app.route("/search")
+def search():
+    """
+    Gets all videos that currently exist in the given date and time range. If no optional parameters are passed,
+    all results are returned. If a date is passed without the time, the search is started from the start of the day/
+    stopped at the end of the day. If only times are provided, evey day is included within those times.
+    This will provide results for media stored both on the camera and on this server.
+
+    Example: domain.tld/search?start-date=20250901&start-time=1543&end-date=20250901&end-time=1946
+
+    Parameters:
+        start-date (str): Start date in YYYYMMDD (optional).
+        start-time (str): Start time in HHMM (optional).
+        end-date (str): End date in YYYYMMDD (optional).
+        end-time (str): End time in HHMM (optional).
+    """
+    start_date = request.args.get("start_date", "19000101")  # Second param is default
+    end_date = request.args.get("end_date", "29991231")
+    start_time = request.args.get("start_time", "0000")
+    end_time = request.args.get("end_time", "1199")
+
+
+
 
 
 os.makedirs("files/", exist_ok=True)

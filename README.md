@@ -17,6 +17,7 @@ CameraServer is used for providing a better web interface from my security camer
     - [ ] Implement deleting old files when storage is full (2)
 - [ ] Implement MP4 file encoding (1) (encoding needed for browser play)
 - [X] Implement Camera DB files processing (2)
+  - [ ] Implement auto updating database files if it is today's and thus not upto date.
 - [ ] Implement path traversal protection (2)
 - [ ] Implement error handling
   - [ ] HTTP Errors (4xx and 5xx)
@@ -35,3 +36,8 @@ CameraServer/
 │  │  ├─ imgdata.db
 │  │  ├─ recdata.db
 ```
+
+# Local vs Camera databases
+This server will have databases for all available media. Whether on the camera or on the server.
+When data is deleted off the camera, local databases will be updated to reflect that, only storing
+dates and filenames that are stored on the server.

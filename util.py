@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from flask import session, redirect, url_for, request
 
@@ -6,7 +7,13 @@ import camera
 from bs4 import BeautifulSoup
 from functools import wraps
 
+from camera import db_suffix, download_and_process_database
 from logger_conf import logger
+
+from datetime import datetime, timedelta
+
+rec_db = os.getenv("RECDB")
+img_db = os.getenv("IMGDB")
 
 
 def get_current_dates_from_sd_page(html):
@@ -134,3 +141,95 @@ def write_media_file(date, media_subfolder, file_name, file_bytes):
 
     logger.debug(f"Wrote {len(file_bytes)} bytes to {local_path}")
 
+
+def update_todays_database() -> None:
+    formatted_date = datetime.now().strftime("%Y%m%d")
+
+    dbs = [rec_db, img_db]
+
+    for db in dbs:
+        camera.download_and_process_database(formatted_date, db)
+
+
+def load_database_file(date, data_media_name) -> list[str]:
+    """
+    Gets database server, processes it, and then stores it on the server in `files/{date}/recdata.db`.
+
+    Parameters:
+    date (string): The date of the database in the format of yyyymmdd.
+    data_media_name (string): What database's contents to get. "rec" for the recording database and "img" for the image database.
+
+    Return: A list of all file names found in the database.
+    """
+    if date == datetime.now().strftime("%Y%m%d"):
+        update_todays_database()
+
+    if data_media_name != "rec" and data_media_name != "img":
+        raise ValueError("Database name must be 'rec' or 'img'. You inputted '" + data_media_name + "' instead.")
+
+    file_path = Path(f"files/{date}/{data_media_name}{db_suffix}")
+    if not file_path.exists():
+        download_and_process_database(date, data_media_name)
+    if file_path.exists():
+        content = file_path.read_text()
+        return content.split("\n")
+
+
+def update_local_non_cam_databases() -> None:
+    """
+    Update all databases that are stored on the server from previous requests
+    but not ones that are currently on the camera.
+    """
+    directory = "files"
+
+    dates_server_stored = get_dir_names_in_directory(directory)
+
+    camera_dates = get_current_dates_from_sd_page(camera.get_index_page())  # Current dates on the camera
+    camera_dates.sort()  # Sort for past-most first date at top, just to make sure.
+
+    earliest_cam_date = camera_dates[0]
+    date_checking = dates_server_stored[0]
+
+    dbs = [rec_db, img_db]
+
+    # Example object:
+    # files = {"20250901": {"record000": ["file1", "file2"], "record001": ["file1", "file2"]}}
+
+    file_dict = {}
+
+    for date in dates_server_stored:
+        if int(date) >= int(earliest_cam_date):
+            break  # Stop if the stored dates gets to the camera stored dates
+
+        sub_folders = get_dir_names_in_directory(directory + f"/{date}")
+        for sub in sub_folders:
+            files = get_file_names_in_directory(directory + f"/{date}/{sub}")
+            if files:  # only store non-empty lists
+                file_dict.setdefault(date, {})[sub] = files
+
+    # TODO: Write the saved media locations to the database files.
+
+
+def get_file_names_in_directory(directory):
+    file_names = []
+    for file in os.listdir(directory):
+        file_path = os.path.join(directory, file)
+        if os.path.isfile(file_path):
+            file_names.append(file)
+
+    return file_names
+
+
+def get_dir_names_in_directory(directory):
+    dir_names = []
+    for folders in os.listdir(directory):
+        path = os.path.join(directory, folders)
+        if os.path.isdir(path):
+            dir_names.append(folders)
+
+    return dir_names
+
+# wipe db file
+# for directory in date, for file in directory, db write file.name
+# date/subfolder/filename - db line structure
+# Rename .mp4 to have .265 since elsewhere in code its designed to handle that

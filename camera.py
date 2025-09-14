@@ -1,8 +1,6 @@
-from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from pathlib import Path
 from logger_conf import logger
-import base64, util
+import util
 import requests
 import os
 import re
@@ -61,12 +59,11 @@ def download_and_process_database(date, data_media_name):
 
     file_bytes = response.content
 
-
     lines = process_database_bytes(file_bytes, file_type)
     file_path = f"files/{date}/{data_media_name}data.db"  # Keep as DB, so it's the same as the camera
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-    with open(file_path, "a") as f:
+    with open(file_path, "w") as f:  # w for overwriting the file if updating today's database.
         for line in lines:
             f.write(line + "\n")
 
@@ -107,27 +104,6 @@ def process_database_bytes(database_bytes, file_type):
     return sd_stripped_matches
 
 
-def load_database_file(date, data_media_name):
-    """
-    Gets database server, processes it, and then stores it on the server in `files/{date}/recdata.db`.
-
-    Parameters:
-    date (string): The date of the database in the format of yyyymmdd.
-    data_media_name (string): What database's contents to get. "rec" for the recording database and "img" for the image database.
-
-    Return: A list of all file names found in the database.
-    """
-    if data_media_name != "rec" and data_media_name != "img":
-        raise ValueError("Database name must be 'rec' or 'img'. You inputted '" + data_media_name + "' instead.")
-
-    file_path = Path(f"files/{date}/{data_media_name}{db_suffix}")
-    if not file_path.exists():
-        download_and_process_database(date, data_media_name)
-    if file_path.exists():
-        content = file_path.read_text()
-        return content.split("\n")
-
-
 def download_file(date, media_subfolder, file_name):
     """
     Downloads the file from the camera.
@@ -143,5 +119,5 @@ def download_file(date, media_subfolder, file_name):
     response = requests.get(address, util.get_headers())
     logger.debug(f"Finished Downloading.")
     if response.status_code != 200:
-        raise Exception(f"Couldnt get file off camera. Status code: {response.status_code}")
+        raise Exception(f"Couldn't get file off camera. Status code: {response.status_code}")
     return response.content
