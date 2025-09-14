@@ -268,3 +268,23 @@ fabric.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all
 files/*
+
+frontend/node_modules/
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Environment variables
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# Build output (if applicable)
+frontend/dist/
+frontend/build/
+
+# Temporary files
+frontend/*.tmp
+frontend/*.temp
