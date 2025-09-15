@@ -33,7 +33,7 @@ def encode_265_to_264_mp4_and_save(date, media_subfolder, file_name, h265_bytes,
         "-c:v", "libx264",         # encode to H.264
         "-preset", "fast",          # optional: encoding speed/efficiency
         "-pix_fmt", "yuv420p",
-        "-f", "mp4", # Ensures its outputted to mp4
+        "-f", "mp4",  # Ensures its outputted to mp4
         "-y" if force_overwrite else "-n",  # overwrite if force else no overwrite
         tmp_path
     ]
@@ -50,10 +50,14 @@ def encode_265_to_264_mp4_and_save(date, media_subfolder, file_name, h265_bytes,
 
     Path(tmp_path).rename(output_path)
 
+    # TODO: Add function to update database to show the video is .mp4 rather than .265
+
     return output_path
+
 
 def wrap_265_with_mp4_and_save(date, media_subfolder, file_name, h265_bytes):
     """
+    *****SHOULDN'T BE USED*****
     Wraps a raw h265 video file with an mp4 container. Saves it to the server.
 
     Parameters:

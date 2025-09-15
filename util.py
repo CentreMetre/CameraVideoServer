@@ -207,8 +207,45 @@ def update_local_non_cam_databases() -> None:
             if files:  # only store non-empty lists
                 file_dict.setdefault(date, {})[sub] = files
 
-    # TODO: Write the saved media locations to the database files.
+    write_locations_to_fresh_databases(file_dict)
 
+
+def write_locations_to_fresh_databases(files:  dict[str, dict[str, list[str]]]) -> None:
+    """
+    Writes locations to a database file that is emptied and then written to.
+
+    Parameters:
+        files: dict[str, dict[str, list[str]]]: A dictionary of file names and file paths. Example:
+        {"20250901": {"record000": ["file1", "file2"], "record001": ["file1", "file2"]}}
+
+    """
+    for date, subfolders in files.items():
+        record_db_path = f"files/{date}/{rec_db}"
+        image_db_path = f"files/{date}/{img_db}"
+        with open(record_db_path, "w") as record_db, open (image_db_path, "w") as image_db:
+            for subfolder, file_list in subfolders.items():
+                if "record" in subfolder:
+                    db = record_db
+                if "image" in subfolder:
+                    db = image_db
+                else:
+                    continue
+
+                for file in file_list:
+                    file_path = f"files/{date}/{subfolder}/{file}\n"
+                    db.write(file_path)
+
+def replace_line_in_database(file_path: str, line: str) -> None:
+    if line[-3:] == "mp4":
+        line_to_replace = line[:-3] + "265"
+
+    file_lines = open(file_path, "r").readlines()
+
+    # if file_lines.
+    #
+    # for line in file_lines:
+    #
+    # with open(file_path, "r") as file:
 
 def get_file_names_in_directory(directory):
     file_names = []
