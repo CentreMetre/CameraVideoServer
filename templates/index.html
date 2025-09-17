@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
 </head>
 <body>
-<div id="list">
-    {% for item in items %}
-        <div>{{ item }}</div>
-    {% endfor %}
-</div>
-<button hx-get="/more" hx-target="#list" hx-swap="afterend">
-    Load more
-</button>
+    <h1>Camera Server</h1>
+    <p>Current time is:</p>
+
+    <div id="dates-container">
+        { }
+    </div>
 </body>
 </html>
