@@ -24,7 +24,15 @@ def index():
     cam_index = camera.get_index_page()
     dates = util.format_dates(util.get_current_dates_from_sd_page(cam_index))
 
-    return render_template("index.html", items=dates)
+    return render_template("index.html")
+
+
+@app.route("/api/dates")
+def get_dates():
+    cam_index = camera.get_index_page()
+    dates = util.get_current_dates_from_sd_page(cam_index)
+
+    return jsonify(dates), 200
 
 
 @app.route("/<date>/<media_type>")

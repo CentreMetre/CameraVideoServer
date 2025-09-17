@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
+from flask import session
+
 from logger_conf import logger
-import util
 import requests
 import os
 import re
@@ -19,7 +20,7 @@ def get_index_page():
     """
     Returns: The HTML of the index page.
     """
-    response = requests.get(cam_url, headers=util.get_headers(), stream=True)
+    response = requests.get(cam_url, headers=get_headers(), stream=True)
     return response.text
 
 
@@ -47,7 +48,7 @@ def download_and_process_database(date, data_media_name):
     rec_db_url = f"{cam_url}/{date}/{data_media_name}data.db"
 
     try:
-        response = requests.get(rec_db_url, util.get_headers())
+        response = requests.get(rec_db_url, get_headers())
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
         if date in get_index_page():
@@ -116,8 +117,19 @@ def download_file(date, media_subfolder, file_name):
 
     address = f"{cam_url}/{date}/{media_subfolder}/{file_name}"
     logger.debug(f"Calling {address} to download file")
-    response = requests.get(address, util.get_headers())
+    response = requests.get(address, get_headers())
     logger.debug(f"Finished Downloading.")
     if response.status_code != 200:
         raise Exception(f"Couldn't get file off camera. Status code: {response.status_code}")
     return response.content
+
+
+def get_headers():
+    """
+    Returns: object of the headers needed for requests
+    """
+    encoded_credentials = session.get('credentials')
+    headers = {
+        "Authorization": f"Basic {encoded_credentials}",
+    }
+    return headers

@@ -7,13 +7,14 @@ import camera
 from bs4 import BeautifulSoup
 from functools import wraps
 
-from camera import db_suffix, download_and_process_database
+from camera import download_and_process_database
 from logger_conf import logger
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 rec_db = os.getenv("RECDB")
 img_db = os.getenv("IMGDB")
+db_suffix = os.getenv("DBSUFFIX")
 
 
 def get_current_dates_from_sd_page(html):
@@ -22,6 +23,7 @@ def get_current_dates_from_sd_page(html):
 
     Returns: List of dates in their original format of yyyymmdd (e.g. 20250718)
     """
+    logger.debug(html)
     html = camera.get_index_page()
     soup = BeautifulSoup(html, 'html.parser')
 
@@ -37,17 +39,6 @@ def get_current_dates_from_sd_page(html):
             continue
 
     return dates
-
-
-def get_headers():
-    """
-    Returns: object of the headers needed for requests
-    """
-    encoded_credentials = session.get('credentials')
-    headers = {
-        "Authorization": f"Basic {encoded_credentials}",
-    }
-    return headers
 
 
 def format_date(date):
