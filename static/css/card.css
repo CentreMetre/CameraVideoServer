@@ -1,0 +1,37 @@
+.card {
+    border-radius: 5px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: purple;
+}
+
+/*div.video { !* div[class~="video"] (the ~=) for as sort of 'includes', .video as a more OOP way*!*/
+
+/*}*/
+
+/* VIDEO */
+
+div.card.video.periodic {
+    border-color: #00008B;
+}
+
+div.card.video.alert {
+    border-color: #8B0000;
+}
+
+/* IMAGE */
+
+div.card.image.periodic {
+    border-color: #63e9ff;
+}
+
+div.card.image.alert {
+    border-color: #ff3c42;
+}
+
+/*
+Light Blue: #ADD8E6 (RGB: 173, 216, 230) Image Periodic
+Dark Blue: #00008B (RGB: 0, 0, 139) Video Periodic
+Light Red: #FFA07A (RGB: 255, 160, 122) Image Alert
+Dark Red: #8B0000 (RGB: 139, 0, 0) Video Alert
+ */
