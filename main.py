@@ -120,3 +120,5 @@ app.run(debug=is_debug)
 error.register_error_handlers(app)
 # TODO: Have to encode, browsers cant play mp4 wrapped 265
 # TODO: Handle if a video file has 999999 the end time, that indicates its not finished recording yet.
+# TODO: Have the ability to view after wrapping, then encode if download is requested.
+# TODO: Add these to readme
