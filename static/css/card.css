@@ -5,11 +5,16 @@
     border-color: purple;
 }
 
-/*div.video { !* div[class~="video"] (the ~=) for as sort of 'includes', .video as a more OOP way*!*/
-
-/*}*/
+.grid-container {
+    display: grid;
+}
 
 /* VIDEO */
+
+.card.video.grid-container {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-auto-rows: auto;
+}
 
 div.card.video.periodic {
     border-color: #00008B;
@@ -20,6 +25,11 @@ div.card.video.alert {
 }
 
 /* IMAGE */
+
+.card.image.grid-container {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: auto;
+}
 
 div.card.image.periodic {
     border-color: #63e9ff;
