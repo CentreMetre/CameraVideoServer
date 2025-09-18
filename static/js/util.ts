@@ -58,18 +58,42 @@ export function extractTimeRangeFromVideoFileName(videoFileName: string): TimeRa
  */
 export type TimeDuration = Time
 
+/**
+ * Calculates the time range of two given times.
+ * @param timeRange A TimeRange object with the start and end times.
+ * @return A TimeDuration object with the time difference. Numbers do not have `0` padding (leading zeros).
+ */
 export function calculateDuration(timeRange: TimeRange): TimeDuration {
-    // 3600 secs in 1 hour
-    // 60 secs in 1 min
-
+    // // 3600 secs in 1 hour
+    // // 60 secs in 1 min
+    //
     // Start Time
     const st: Time = timeRange.startTime
 
     // End Time
     const et: Time = timeRange.endTime
 
-    const startInSeconds = st.hours * 3600 + st.minutes * 60 + st.seconds
-    const endInSeconds = et.hours * 3600 + et.minutes * 60 + et.seconds
+    // // These are absolute times, e.g. 09:05:23
+    // const startInSeconds = st.hours * 3600 + st.minutes * 60 + st.seconds
+    // const endInSeconds = et.hours * 3600 + et.minutes * 60 + et.seconds
+    //
+    // // Should be less than 3600, but will assume more than an hour can exist, I don't know full capabilities of camera.
+    // const deltaInSeconds: number = endInSeconds - startInSeconds
 
-    return { hours: 2, minutes: 2, seconds: 2 }
+    const startDate: Date = new Date(`2025-01-01T${st.hours}:${st.minutes}:${st.seconds}`)
+    const endDate: Date = new Date(`2025-01-01T${et.hours}:${et.minutes}:${et.seconds}`)
+
+    const diffInMilliseconds: number = endDate.getTime() - startDate.getTime()
+
+    // Calculate hours by dividing total milliseconds by ms in one hour
+    const hours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
+
+    // Calculate remaining minutes after removing whole hours
+    const minutes = Math.floor((diffInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+
+    // Calculate remaining seconds after removing whole minutes
+    const seconds = Math.floor((diffInMilliseconds % (1000 * 60)) / 1000);
+
+
+    return { hours: hours, minutes: minutes, seconds: seconds }
 }
