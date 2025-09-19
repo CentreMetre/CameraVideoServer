@@ -3,6 +3,10 @@
     border-style: solid;
     border-width: 2px;
     border-color: purple;
+    grid-template-areas:
+    "date time ."
+    "media record duration"
+    "filename filename filname";
 }
 
 .grid-container {
