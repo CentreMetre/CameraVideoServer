@@ -68,9 +68,8 @@
     border-color: #ff3c42;
 }
 
-/*
-Light Blue: #ADD8E6 (RGB: 173, 216, 230) Image Periodic
-Dark Blue: #00008B (RGB: 0, 0, 139) Video Periodic
-Light Red: #FFA07A (RGB: 255, 160, 122) Image Alert
-Dark Red: #8B0000 (RGB: 139, 0, 0) Video Alert
- */
+/* DATE */
+
+.card.date {
+    border-color: black;
+}

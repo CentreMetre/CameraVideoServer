@@ -112,9 +112,6 @@ def search():
     end_time = request.args.get("end_time", "1199")
 
 
-
-
-
 os.makedirs("files/", exist_ok=True)
 app.run(debug=is_debug)
 error.register_error_handlers(app)
@@ -122,3 +119,4 @@ error.register_error_handlers(app)
 # TODO: Handle if a video file has 999999 the end time, that indicates its not finished recording yet.
 # TODO: Have the ability to view after wrapping, then encode if download is requested.
 # TODO: Add these to readme
+# TODO: Create "amount of images/videos" endpoint, that returns the amount for a given date
