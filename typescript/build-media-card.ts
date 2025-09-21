@@ -1,43 +1,50 @@
 import {
-    calculateDuration, extractDateFromFilename, extractTimeFromImageFileName,
-    extractTimeRangeFromVideoFileName,
-    formatDateFromCamToGB,
+    calculateDuration,
+    extractDateFromFilename,
+    extractTimeFromImageFileName,
+    extractTimeRangeFromVideoFileName, formatDateFromCamToGB,
     formatTimeFromCamToUTC,
-    Time, TimeDuration,
+    TimeDuration,
     TimeRange
-} from "./util";
+} from "./util.js";
 
 /**
  *
  * @param filename The filename of the media.
  */
-function mediaCardBuilder(filename: string): HTMLElement {
+export function buildMediaCard(filename: string): HTMLElement {
 
-    // CREATING DATA TO FILL HTML WITH //
+    console.debug(filename)
 
-    if (filename.slice(-3) === "jpg") {
-        return buildVideoCard(filename)
+    if (filename.slice(-3).toLowerCase() === "jpg") {
+        return buildImageCard(filename)
     }
     else {
         //Assume it's a video otherwise. Saves checking for mp4 and 265
-        buildImageCard(filename)
+        return buildVideoCard(filename)
     }
 }
 
 function buildVideoCard(filename: string): HTMLElement {
 
+    console.debug("In buildVideoCard for " + filename)
+
     // CREATING DATA TO FILL HTML WITH //
 
-    const date: string = extractDateFromFilename(filename)
+    let date: string = extractDateFromFilename(filename)
+    date = formatDateFromCamToGB(date)
 
     const mediaType: string = "video"
-    let recordType: string = undefined;
+    let recordType: string | undefined = undefined;
+    let recordTypeCapital: string | undefined = undefined
 
     if (filename[0].toLowerCase() === "a") {
         recordType = "alert"
+        recordTypeCapital = "Alert"
     }
     else { // Assume periodic
         recordType = "periodic"
+        recordTypeCapital = "Periodic"
     }
 
     const timeRange: TimeRange = extractTimeRangeFromVideoFileName(filename)
@@ -59,25 +66,30 @@ function buildVideoCard(filename: string): HTMLElement {
 
     // FIRST ROW //
     const dateEl = document.createElement("p")
-    dateEl.classList.add("time")
+    dateEl.classList.add("date")
     dateEl.textContent = date;
 
     const timeRangeEl = document.createElement("p")
+    timeRangeEl.classList.add("time")
     timeRangeEl.textContent = timeRangeString
 
     // SECOND ROW //
     const mediaTypeEl = document.createElement("p")
+    mediaTypeEl.classList.add("media-type")
     mediaTypeEl.textContent = mediaType
 
     const recordTypeEl = document.createElement("p")
-    recordTypeEl.textContent = recordType
+    recordTypeEl.classList.add("record-type")
+    recordTypeEl.textContent = recordTypeCapital
 
     const videoDurationEl = document.createElement("p")
+    videoDurationEl.classList.add("duration")
     videoDurationEl.textContent = videoDuration.hours === 0 ? `${videoDuration.minutes}m ${videoDuration.seconds}s` :
         `${videoDuration.hours}h ${videoDuration.minutes}m ${videoDuration.seconds}s`
 
     // THIRD ROW
     const filenameEl = document.createElement("p")
+    filenameEl.classList.add("filename")
     filenameEl.textContent = filename;
 
     // FIRST ROW
@@ -97,20 +109,27 @@ function buildVideoCard(filename: string): HTMLElement {
 
 function buildImageCard(filename: string): HTMLElement {
 
+    console.debug("In buildImageCard for " + filename)
+
     // CREATING DATA TO FILL HTML WITH //
 
-    const date: string = extractDateFromFilename(filename)
+    let  date: string = extractDateFromFilename(filename)
+    date = formatDateFromCamToGB(date)
 
-    const time: string = extractTimeFromImageFileName(filename)
+    let time: string = extractTimeFromImageFileName(filename)
+    time = formatTimeFromCamToUTC(time)
 
     const mediaType: string = "image"
-    let recordType: string = undefined;
+    let recordType: string | undefined = undefined;
+    let recordTypeCapital: string | undefined = undefined
 
     if (filename[0].toLowerCase() === "a") {
         recordType = "alert"
+        recordTypeCapital = "Alert"
     }
     else { // Assume periodic
         recordType = "periodic"
+        recordTypeCapital = "Periodic"
     }
 
     // CREATING HTML //
@@ -122,21 +141,25 @@ function buildImageCard(filename: string): HTMLElement {
 
     // FIRST ROW
     const dateEl = document.createElement("p")
-    dateEl.classList.add("time")
+    dateEl.classList.add("date")
     dateEl.textContent = date;
 
     const timeEl = document.createElement("p")
+    timeEl.classList.add("time")
     timeEl.textContent = time
 
     // SECOND ROW //
     const mediaTypeEl = document.createElement("p")
+    mediaTypeEl.classList.add("media-type")
     mediaTypeEl.textContent = mediaType
 
     const recordTypeEl = document.createElement("p")
-    recordTypeEl.textContent = recordType
+    recordTypeEl.classList.add("record-type")
+    recordTypeEl.textContent = recordTypeCapital
 
     // THIRD ROW
     const filenameEl = document.createElement("p")
+    filenameEl.classList.add("filename")
     filenameEl.textContent = filename;
 
     // FIRST ROW

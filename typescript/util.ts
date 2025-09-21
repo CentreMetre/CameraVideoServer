@@ -1,21 +1,31 @@
 /**
- * Converts a date from the cameras format (yyyymmdd) to the gb format (dd/mm/yyyy).
+ * Converts a date from the cameras format (yymmdd) to the gb format (dd/mm/yy).
  * @param date The date to convert.
  * @returns The formatted date (dd/mm/yyyy).
  */
 export function formatDateFromCamToGB(date: string): string {
-    const year: string = date.slice(0,4)
-    const month: string = date.slice(4,6)
-    const day: string = date.slice(6,8)
+    const year: string = date.slice(0,2)
+    const month: string = date.slice(2,4)
+    const day: string = date.slice(4,6)
 
-    return `${day}/${month}/${year}`;
+    return `${day}/${month}/20${year}`; // Don't need to worry about the year starting with 20 for another 75 years.
 }
 
 /**
  * Converts a time object into a string of hh:mm:ss, or mm:ss if there is no hours.
- * @param time
+ * @param time Can be a time object or a string. If it's a string it must be just the time, not the date as well.
  */
-export function formatTimeFromCamToUTC(time: Time): string {
+export function formatTimeFromCamToUTC(time: Time | string): string {
+    if (typeof time === "string") {
+        if (time.length != 6) {
+            throw RangeError("The time must be 6 characters long.")
+        }
+        const hours: string = time.slice(0, 2)
+        const minutes : string = time.slice(2, 4)
+        const seconds: string = time.slice(4, 6)
+        return `${hours}:${minutes}:${seconds}`
+    }
+
     let minutes: string = time.minutes.toString()
 
     if (minutes.length === 1) {

@@ -1,19 +1,30 @@
 .card {
-    border-radius: 5px;
+    border-radius: 10px; /* None curved cards caused by browser extension. Test in incognito */
     border-style: solid;
     border-width: 2px;
-    border-color: purple;
+    display: grid;
     grid-template-areas:
     "date time ."
-    "media record duration"
-    "filename filename filname";
+    "media-type record-type duration"
+    "filename filename filename";
+    justify-content: space-between;
+    overflow: hidden;
+    background-color: grey;
 }
 
 .grid-container {
     display: grid;
 }
 
+.date { grid-area: date; }
+.time { grid-area: time; }
+.media-type { grid-area: media-type; }
+.record-type { grid-area: record-type; }
+.filename { grid-area: filename; }
+
 /* VIDEO */
+
+.duration { grid-area: duration; }
 
 .card.video.grid-container {
     grid-template-columns: 1fr 1fr 1fr;

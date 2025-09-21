@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../static/css/card.css">
+    <link rel="stylesheet" href="../static/css/media-list.css">
+</head>
+<body>
+
+    <div id="card-list">
+
+    </div>
+    <script type="module">
+        import { buildMediaCard } from "../static/js/build-media-card.js"
+
+        const files = ["P25091715443200.jpg", "A250917_003127_003141.265", "P250917_110828_111307.265"]
+
+        for (let file of files)
+        {
+            let card = buildMediaCard(file)
+            document.getElementById("card-list").appendChild(card)
+        }
+    </script>
+</body>
+</html>
