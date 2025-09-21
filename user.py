@@ -15,7 +15,7 @@ user_bp = Blueprint('user', __name__)
 
 @user_bp.route("/login", methods=['GET'])
 def get_login_page():
-    return render_template("login.html", credentials=session.get('credentials'))
+    return render_template("static/pages/login.html", credentials=session.get('credentials'))
 
 
 @user_bp.route("/auth/login", methods=['POST'])

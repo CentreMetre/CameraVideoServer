@@ -19,11 +19,10 @@
 }
 
 .card > * {
-    /* All direct children of .card get these styles */
     padding: 5px;
-    display: flex;                /* optional, helps with centering content */
-    justify-content: center;      /* optional */
-    align-items: center;          /* optional */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .grid-container {
@@ -71,5 +70,5 @@
 /* DATE */
 
 .card.date {
-    border-color: black;
+    border-color: #000000;
 }

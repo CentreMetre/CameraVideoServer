@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+    <body>
+        <h1>Dates List</h1>
+
+        <div id="date-list">
+
+        </div>
+
+    <script type="module">
+        const dates = await fetch("/api/dates")
+        const dateListElement = document.getElementById("date-list")
+        for (date of dates) {
+            const dateLink = document.createElement('a')
+            dateLink.rel = fetch(date)
+        }
+    </script>
+    </body>
+</html>

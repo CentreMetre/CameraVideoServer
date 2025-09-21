@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, send_file, request
+from flask import Flask, render_template, jsonify, send_file, request, send_from_directory
 
 import error
 import image
@@ -24,7 +24,7 @@ def index():
     cam_index = camera.get_index_page()
     dates = util.format_dates(util.get_current_dates_from_sd_page(cam_index))
 
-    return render_template("index.html")
+    return send_from_directory("static/pages", "index.html")
 
 
 @app.route("/api/dates")
@@ -35,8 +35,8 @@ def get_dates():
     return jsonify(dates), 200
 
 
-@app.route("/<date>/<media_type>")
-def get_media_list_from_date(date, media_type):
+@app.route("/api/<date>/<media_type>")
+def get_media_list_from_date_and_type(date, media_type):
     """
     Gets the specified media type from the specified date.
 
@@ -51,6 +51,29 @@ def get_media_list_from_date(date, media_type):
 
     database = util.load_database_file(date, media_type)
     return jsonify(database)
+
+
+@app.route("/api/<date>")
+def get_media_list_from_date(date):
+    """
+    Gets all media from specified date.
+
+    Parameters:
+        date (str): The date to get the media list from
+
+    Returns: JSON of a list of media file names.
+    """
+    img_list = util.load_database_file(date, "img")
+    rec_list = util.load_database_file(date, "rec")
+
+    full_list = img_list + rec_list
+
+    return jsonify(full_list)
+
+
+@app.route("/<date>")
+def serve_date_page():
+    return send_from_directory("static/pages", "date-list.html")
 
 
 @app.route("/<date>/<media_subfolder>/<file_name>/<action>")
@@ -120,3 +143,4 @@ error.register_error_handlers(app)
 # TODO: Have the ability to view after wrapping, then encode if download is requested.
 # TODO: Add these to readme
 # TODO: Create "amount of images/videos" endpoint, that returns the amount for a given date
+# TODO: Refactor to use send_from_directory for 0 Server Side Rendering. Do it in user.py as well
