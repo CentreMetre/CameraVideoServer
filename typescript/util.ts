@@ -38,7 +38,7 @@ export function formatTimeFromCamToUTC(time: Time | string): string {
         seconds = "0" + seconds
     }
 
-    if (time.hours === undefined || time.hours === 0 || time.hours == null) {
+    if (time.hours === undefined || time.hours == null) { // Don't exclude == 0 because 00 is needed for time range if it starts after midnight and before 1am
         return `${minutes}:${seconds}`
     }
 
@@ -119,8 +119,8 @@ export function calculateDuration(timeRange: TimeRange): TimeDuration {
     const et: Time = timeRange.endTime
 
     // Actual date doesn't matter, as long as they are the same in each
-    const startDate: Date = new Date(`2025-01-01T${st.hours}:${st.minutes}:${st.seconds}`)
-    const endDate: Date = new Date(`2025-01-01T${et.hours}:${et.minutes}:${et.seconds}`)
+    const startDate: Date = new Date(`2025-01-01T${padTime(st.hours)}:${padTime(st.minutes)}:${padTime(st.seconds)}`)
+    const endDate: Date = new Date(`2025-01-01T${padTime(et.hours)}:${padTime(et.minutes)}:${padTime(et.seconds)}`)
 
     const diffInMilliseconds: number = endDate.getTime() - startDate.getTime()
 
@@ -152,4 +152,12 @@ export function extractDateFromFilename(filename: string) {
  */
 export function extractTimeFromImageFileName(filename: string): string {
     return filename.substring(7, 13) // Image names have 00 at the end, e.g. A25091715443100.jpg, so substring is easier than removing extension and date.
+}
+
+/**
+ * Pad a time so that it will always start with 0 if it is a single digit0
+ * @param time The number to pad.
+ */
+export function padTime(time: number): string {
+    return time.toString().padStart(2, '0');
 }

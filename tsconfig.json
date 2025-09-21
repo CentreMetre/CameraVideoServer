@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ES6",
+    "lib": ["es2017", "dom"],
     "moduleResolution": "node",
     "outDir": "./static/js",
     "rootDir": "./typescript",
