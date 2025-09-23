@@ -3,7 +3,7 @@ import os
 import requests
 
 from dotenv import load_dotenv
-from flask import session, jsonify, request, render_template, Blueprint, redirect, url_for
+from flask import session, jsonify, request, render_template, Blueprint, redirect, url_for, send_from_directory
 
 from logger_conf import logger
 
@@ -15,7 +15,7 @@ user_bp = Blueprint('user', __name__)
 
 @user_bp.route("/login", methods=['GET'])
 def get_login_page():
-    return render_template("static/pages/login.html", credentials=session.get('credentials'))
+    return send_from_directory("static/pages", "login.html")
 
 
 @user_bp.route("/auth/login", methods=['POST'])

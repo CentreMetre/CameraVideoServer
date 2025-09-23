@@ -1,5 +1,7 @@
 from flask import Flask, render_template, jsonify, send_file, request, send_from_directory
 
+from logger_conf import logger
+
 import error
 import image
 import video
@@ -24,7 +26,7 @@ def index():
     cam_index = camera.get_index_page()
     dates = util.format_dates(util.get_current_dates_from_sd_page(cam_index))
 
-    return send_from_directory("static/pages", "index.html")
+    return send_from_directory("static/pages", "date-list.html")
 
 
 @app.route("/api/dates")
@@ -53,7 +55,7 @@ def get_media_list_from_date_and_type(date, media_type):
     return jsonify(database)
 
 
-@app.route("/api/<date>")
+@app.route("/api/<date>/filenames")
 def get_media_list_from_date(date):
     """
     Gets all media from specified date.
@@ -64,16 +66,29 @@ def get_media_list_from_date(date):
     Returns: JSON of a list of media file names.
     """
     img_list = util.load_database_file(date, "img")
+
+    img_filenames = []
+
+    for img in img_list:
+        img_filenames.append(util.extract_filename_from_path(img))
+
     rec_list = util.load_database_file(date, "rec")
 
-    full_list = img_list + rec_list
+    rec_filenames = []
+
+    for rec in rec_list:
+        rec_filenames.append(util.extract_filename_from_path(rec))
+
+    full_list = img_filenames + rec_filenames
+
+    logger.debug(full_list)
 
     return jsonify(full_list)
 
 
 @app.route("/<date>")
-def serve_date_page():
-    return send_from_directory("static/pages", "date-list.html")
+def serve_date_page(date):
+    return send_from_directory("static/pages", "media-list.html")
 
 
 @app.route("/<date>/<media_subfolder>/<file_name>/<action>")
@@ -113,6 +128,7 @@ def get_file(date, media_subfolder, file_name, action):
     if not file_ready:
         return jsonify({"message": "Video is found and exists but is being encoded."}), 202
 
+
 @app.route("/search")
 def search():
     """
@@ -144,3 +160,4 @@ error.register_error_handlers(app)
 # TODO: Add these to readme
 # TODO: Create "amount of images/videos" endpoint, that returns the amount for a given date
 # TODO: Refactor to use send_from_directory for 0 Server Side Rendering. Do it in user.py as well
+# TODO: Change DB writing/handling so there Isn't empty new lines at the end.

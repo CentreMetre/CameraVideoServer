@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/card.css">
+    <link rel="stylesheet" href="static/css/main.css">
+    <link rel="stylesheet" href="static/css/card.css">
 </head>
 <body>
 
@@ -12,12 +12,20 @@
 
     </div>
     <script type="module">
-        import { buildMediaCard } from "../js/build-media-card.js"
+        import { buildMediaCard } from "../static/js/build-media-card.js"
 
-        const files = ["P25091715443200.jpg", "A250917_003127_003141.265", "P250917_110828_111307.265"]
+        const path = window.location.pathname;
+
+        const date = path.startsWith("/") ? path.slice(1) : path;
+
+        const response = await fetch(`api/${date}/filenames`)
+        const files = await response.json()
 
         for (let file of files)
         {
+            if (file === "") {
+                continue
+            }
             let card = buildMediaCard(file)
             document.getElementById("card-list").appendChild(card)
         }

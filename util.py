@@ -261,3 +261,17 @@ def get_dir_names_in_directory(directory):
 # for directory in date, for file in directory, db write file.name
 # date/subfolder/filename - db line structure
 # Rename .mp4 to have .265 since elsewhere in code its designed to handle that
+
+
+def extract_filename_from_path(filepath: str) -> str:
+    """
+    Extracts the filename from a given filepath, including extension.
+
+    Parameters:
+        filepath (str): The path to extract the filename from. The filename should be the last part of the path. Delimiters should be /
+
+    Returns: The filename including the extension
+    """
+    parts = filepath.split("/")
+
+    return parts[-1]

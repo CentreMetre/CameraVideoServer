@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Camera Dates</title>
+    <link rel="stylesheet" href="static/css/main.css">
 </head>
     <body>
         <h1>Dates List</h1>
@@ -12,11 +13,16 @@
         </div>
 
     <script type="module">
-        const dates = await fetch("/api/dates")
+        const response = await fetch("/api/dates")
+        const dates = await response.json()
         const dateListElement = document.getElementById("date-list")
-        for (date of dates) {
+
+        for (const date of dates) {
             const dateLink = document.createElement('a')
-            dateLink.rel = fetch(date)
+            dateLink.href = `/${date}`
+            dateLink.textContent = date
+            dateListElement.appendChild(dateLink)
+            dateListElement.appendChild(document.createElement('br'))
         }
     </script>
     </body>
