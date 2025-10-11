@@ -4,26 +4,34 @@
     <meta charset="UTF-8">
     <title>Camera Dates</title>
     <link rel="stylesheet" href="static/css/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
     <body>
         <h1>Dates List</h1>
-
+        <a href="https://example.com" class="btn" target="_blank" rel="noopener noreferrer">Go to URL</a>
         <div id="date-list">
 
         </div>
 
-    <script type="module">
-        const response = await fetch("/api/dates")
-        const dates = await response.json()
-        const dateListElement = document.getElementById("date-list")
+        <script type="module">
+            const response = await fetch("/api/dates")
+            const dates = await response.json()
+            const dateListElement = document.getElementById("date-list")
 
-        for (const date of dates) {
-            const dateLink = document.createElement('a')
-            dateLink.href = `/${date}`
-            dateLink.textContent = date
-            dateListElement.appendChild(dateLink)
-            dateListElement.appendChild(document.createElement('br'))
-        }
-    </script>
+            for (const date of dates) {
+
+                let year = date.slice(0, 4)
+                let month = date.slice(4, 6)
+                let day = date.slice(6, 8)
+                let formattedDate = `${day}/${month}/${year}`
+
+                const dateLink = document.createElement('a')
+                dateLink.href = `/${date}`
+                dateLink.textContent = formattedDate
+                dateListElement.appendChild(dateLink)
+                dateListElement.appendChild(document.createElement('br'))
+            }
+        </script>
     </body>
 </html>

@@ -35,6 +35,7 @@ function buildVideoCard(filename: string): HTMLElement {
     date = formatDateFromCamToGB(date)
 
     const mediaType: string = "video"
+    const mediaTypeCapital: string = "Video"
     let recordType: string | undefined = undefined;
     let recordTypeCapital: string | undefined = undefined
 
@@ -76,7 +77,7 @@ function buildVideoCard(filename: string): HTMLElement {
     // SECOND ROW //
     const mediaTypeEl = document.createElement("p")
     mediaTypeEl.classList.add("media-type")
-    mediaTypeEl.textContent = mediaType
+    mediaTypeEl.textContent = mediaTypeCapital
 
     const recordTypeEl = document.createElement("p")
     recordTypeEl.classList.add("record-type")
@@ -120,6 +121,7 @@ function buildImageCard(filename: string): HTMLElement {
     time = formatTimeFromCamToUTC(time)
 
     const mediaType: string = "image"
+    const mediaTypeCapital: string = "Image"
     let recordType: string | undefined = undefined;
     let recordTypeCapital: string | undefined = undefined
 
@@ -151,7 +153,7 @@ function buildImageCard(filename: string): HTMLElement {
     // SECOND ROW //
     const mediaTypeEl = document.createElement("p")
     mediaTypeEl.classList.add("media-type")
-    mediaTypeEl.textContent = mediaType
+    mediaTypeEl.textContent = mediaTypeCapital
 
     const recordTypeEl = document.createElement("p")
     recordTypeEl.classList.add("record-type")

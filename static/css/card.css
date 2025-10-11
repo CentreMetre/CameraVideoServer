@@ -8,14 +8,15 @@
     border-width: 2px;
     display: grid;
     grid-template-areas:
-    "date time ."
+    "date time time"  /* time used twice so time can use both columns and not wrap on video cards */
     "media-type record-type duration"
     "filename filename filename";
     justify-content: space-between;
     overflow: hidden;
-    margin-bottom: 3em; /* Needed because gap wont work */
-    width: 50%;
+    /*margin-bottom: 3em; !* Needed because gap wont work *!*/
+    width: 80%;
     grid-template-columns: 33% 33% 33%;
+    margin: 0 auto 3em auto;
 }
 
 .card > * {

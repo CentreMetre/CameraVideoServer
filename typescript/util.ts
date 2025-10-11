@@ -140,7 +140,7 @@ export function calculateDuration(timeRange: TimeRange): TimeDuration {
 /**
  * Extracts the date from a file name. Filename can be either video or image since both start with AYYMMDD_
  * @param filename The name of the file, should be in a format of AYYMMDD_... where A can be anything, YYMMDD is the date format, and the _... doesn't matter.
- * Returns a date from the filename in the format of YYMMDD assuming that's the format the filename came with.
+ * @returns a date from the filename in the format of YYMMDD assuming that's the format the filename came with.
  */
 export function extractDateFromFilename(filename: string) {
     return filename.substring(1, 7)
@@ -160,4 +160,26 @@ export function extractTimeFromImageFileName(filename: string): string {
  */
 export function padTime(time: number): string {
     return time.toString().padStart(2, '0');
+}
+
+/**
+ * Extracts the filename from a path of media from the camera, excluding extension.
+ * @param path The path to extract the filename from
+ * @returns The filename excluding the extension. e.g. 20250923/record001/A250923_150431_150445.265 turns into A250923_150431_150445
+ */
+export function extract_filename_from_path_excluding_extension(path: string): string {
+    const parts: string[] = path.split("/")
+    const filenameExt: string[] = parts[parts.length - 1].split(".")
+    const filename: string = filenameExt[0]
+    return filename
+}
+
+/**
+ * Extracts the filename from a path of media from the camera, including extension.
+ * @param path The path to extract the filename from
+ * @returns The filename including the extension. e.g. 20250923/record001/A250923_150431_150445.265 turns into A250923_150431_150445.265
+ */
+export function extract_filename_from_path(path: string): string {
+    const parts: string[] = path.split("/")
+    return parts[parts.length - 1]
 }
