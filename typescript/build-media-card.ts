@@ -177,3 +177,52 @@ function buildImageCard(filename: string): HTMLElement {
 
     return card
 }
+
+/**
+ *
+ * @param path The path of the file. Example: "20251011/images000/A25101106590700.jpg". Can be retrieved from the server.
+ * @param action Thea action to do. Is either "view" or "download"
+ */
+export function buildActionButton(path: string, action: "view" | "download"): HTMLElement {
+    if (action != "view" && action != "download") {
+        throw new Error("'action' parameter must be 'view' or 'download'")
+    }
+    const path_parts = path.split("/")
+
+    let aEl: HTMLAnchorElement = document.createElement("a")
+
+    aEl.href = `/file/${path_parts[0]}/${path_parts[1]}/${path_parts[2]}/${action}`
+    // aEl.href = `/file/${path}/${action}`
+
+    let buttonEl: HTMLButtonElement = document.createElement("button")
+    buttonEl.classList.add("action-button")
+    buttonEl.classList.add(`action-${action}`)
+
+    if (action === "view") {
+        buttonEl.textContent = "View"
+    }
+    else {
+        buttonEl.textContent = "Download"
+    }
+
+    aEl.appendChild(buttonEl)
+
+    return aEl
+}
+
+/**
+ * Builds a div that contains both view and download buttons
+ * @param path The path of the file the button is being created for.
+ */
+export function buildActionButtonsDiv(path: string): HTMLDivElement {
+    const viewButton = buildActionButton(path, "view")
+    const downloadButton = buildActionButton(path, "download")
+
+    const buttonRowEl = document.createElement("div")
+    buttonRowEl.classList.add("actions")
+
+    buttonRowEl.appendChild(viewButton)
+    buttonRowEl.appendChild(downloadButton)
+
+    return buttonRowEl;
+}

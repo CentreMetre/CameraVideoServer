@@ -16,7 +16,7 @@
     /*margin-bottom: 3em; !* Needed because gap wont work *!*/
     width: 80%;
     grid-template-columns: 33% 33% 33%;
-    margin: 0 auto 3em auto;
+    margin: 0 auto 1em auto;
 }
 
 .card > * {
@@ -73,3 +73,19 @@
 .card.date {
     border-color: #000000;
 }
+
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    margin: 0 auto 2em auto;
+}
+
+.action-button {
+    padding: 12px 24px;
+    font-size: 18px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.action-view

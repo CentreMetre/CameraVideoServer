@@ -3,24 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="static/css/main.css">
-    <link rel="stylesheet" href="static/css/card.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/card.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+
 
     <div id="card-list">
 
     </div>
     <script type="module">
-        import { buildMediaCard } from              "../static/js/build-media-card.js"
-        import { extract_filename_from_path } from  "../static/js/util.js";
+        import { buildMediaCard, buildActionButton, buildActionButtonsDiv } from "/static/js/build-media-card.js"
+        import { extract_filename_from_path } from      "/static/js/util.js";
 
-        const path = window.location.pathname;
+        const path = window.location.pathname; // Get the path name to get the date
+        console.debug(path)
 
-        const date = path.startsWith("/") ? path.slice(1) : path;
+        const path_parts = path.split("/");
+        const date = path_parts[path_parts.length - 1] // Split and extract just the date (assumes date is at the end, as it should be unless the endpoint changes)
 
-        const response = await fetch(`api/${date}/paths`)
+        console.debug(date)
+
+        const response = await fetch(`/api/${date}/paths`)
         const paths = await response.json()
 
         const filenames = []
@@ -29,13 +34,19 @@
             filenames.push(extract_filename_from_path(path))
         }
 
-        for (let file of filenames)
-        {
-            if (file === "") { // used as temp fix until db is fixed
+        for (const path of paths) {
+
+            if (path === "") { // used as temp fix until db is fixed
                 continue
             }
-            let card = buildMediaCard(file)
+
+            const filename = extract_filename_from_path(path)
+            let card = buildMediaCard(filename)
             document.getElementById("card-list").appendChild(card)
+
+            let buttons = buildActionButtonsDiv(path)
+
+            document.getElementById("card-list").appendChild(buttons)
         }
     </script>
 </body>
