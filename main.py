@@ -56,7 +56,7 @@ def get_media_list_from_date_and_type(date, media_type):
 
 
 @app.route("/api/<date>/filenames")
-def get_media_list_from_date(date):
+def get_media_filenames_from_date(date):
     """
     Gets all media from specified date.
 
@@ -86,10 +86,28 @@ def get_media_list_from_date(date):
     return jsonify(full_list)
 
 
-@app.route("/<date>")
+@app.route("/api/<date>/paths")
+def get_media_paths_from_date(date):
+    """
+    Gets all media from specified date.
+
+    Parameters:
+        date (str): The date to get the media list from
+
+    Returns: JSON of a list of media file names.
+    """
+    img_list = util.load_database_file(date, "img")
+
+    rec_list = util.load_database_file(date, "rec")
+
+    full_list = img_list + rec_list
+
+    return jsonify(full_list)
+
+
+@app.route("/date/<date>")
 def serve_date_page(date):
     return send_from_directory("static/pages", "media-list.html")
-
 
 @app.route("/<date>/<media_subfolder>/<file_name>/<action>")
 def get_file(date, media_subfolder, file_name, action):
@@ -127,6 +145,19 @@ def get_file(date, media_subfolder, file_name, action):
 
     if not file_ready:
         return jsonify({"message": "Video is found and exists but is being encoded."}), 202
+
+@app.route("/file/<file_name>/<action>")
+def serve_file(file_name, action):
+    """
+        Gets the specified file and returns in in the manner of the action requested.
+    """
+    if action != "view" and action != "download":
+        return jsonify({"error": f"Invalid action. 'view' or 'download' are required, but {action} was provided."}), 400
+
+    file_type = file_name[-3:]
+
+
+
 
 
 @app.route("/search")

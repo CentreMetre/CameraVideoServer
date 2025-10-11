@@ -136,7 +136,7 @@ def write_media_file(date, media_subfolder, file_name, file_bytes):
 def update_todays_database() -> None:
     formatted_date = datetime.now().strftime("%Y%m%d")
 
-    dbs = [rec_db, img_db]
+    dbs = ["rec", "img"] # fixed because it didnt = rec or img, but the whole db name. THe following functionc all requires the emdia type in img or rec
 
     for db in dbs:
         camera.download_and_process_database(formatted_date, db)
