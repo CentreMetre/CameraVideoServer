@@ -109,7 +109,8 @@ def get_media_paths_from_date(date):
 def serve_date_page(date):
     return send_from_directory("static/pages", "media-list.html")
 
-@app.route("/<date>/<media_subfolder>/<file_name>/<action>")
+
+@app.route("/file/<date>/<media_subfolder>/<file_name>/<action>")
 def get_file(date, media_subfolder, file_name, action):
     """
     Gets the specified file from the specified date and location.
@@ -145,19 +146,6 @@ def get_file(date, media_subfolder, file_name, action):
 
     if not file_ready:
         return jsonify({"message": "Video is found and exists but is being encoded."}), 202
-
-@app.route("/file/<file_name>/<action>")
-def serve_file(file_name, action):
-    """
-        Gets the specified file and returns in in the manner of the action requested.
-    """
-    if action != "view" and action != "download":
-        return jsonify({"error": f"Invalid action. 'view' or 'download' are required, but {action} was provided."}), 400
-
-    file_type = file_name[-3:]
-
-
-
 
 
 @app.route("/search")
