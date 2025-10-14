@@ -190,4 +190,5 @@ error.register_error_handlers(app)
 # TODO: Refactor to use send_from_directory for 0 Server Side Rendering. Do it in user.py as well
 # TODO: Change DB writing/handling so there Isn't empty new lines at the end.
 # TODO: Idea: Have auth be if not authed throw an error for easier redirection. Only need to check on some APIs, might be easier
+# TODO: Implement viewing a wrapped instead of encuded file, but have a warning if its warpped
 # Auth check notes: only need to check on api calls, not page serving, so that would make it easier to check for auth
