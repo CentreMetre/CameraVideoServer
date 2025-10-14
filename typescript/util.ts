@@ -1,19 +1,62 @@
 /**
- * Converts a date from the cameras format (yymmdd) to the gb format (dd/mm/yy).
+ * Converts a date from the cameras format (yymmdd or yyyymmdd) to the gb format (dd/mm/yyyy).
  * @param date The date to convert.
  * @returns The formatted date (dd/mm/yyyy).
  */
 export function formatDateFromCamToGB(date: string): string {
-    const year: string = date.slice(0,2)
-    const month: string = date.slice(2,4)
-    const day: string = date.slice(4,6)
+    let year: string;
+    let month: string;
+    let day: string;
 
-    return `${day}/${month}/20${year}`; // Don't need to worry about the year starting with 20 for another 75 years.
+    let fulldate: string;
+
+    if (date.length === 6)
+    {
+        year = date.slice(0,2)
+        month = date.slice(2,4)
+        day = date.slice(4,6)
+        fulldate = `${day}/${month}/20${year}`; // Don't need to worry about the year starting with 20 for another 75 years.
+    }
+    else { // assume full yyyymmdd otherwise
+        year = date.slice(0,4)
+        month = date.slice(4,6)
+        day = date.slice(6,8)
+        fulldate = `${day}/${month}/${year}`
+    }
+
+    return fulldate
+}
+
+/**
+ * Formats a date from GB format (dd/mm/yyyy) to ISO format (yyyy-mm-dd). Used for Date().
+ * @param date The date to format.
+ */
+export function formatDateFromGBtoISO(date: string): string {
+    const parts: string[] = date.split("/")
+
+    const year = parts[2]
+    const month = parts[1]
+    const day = parts[0]
+
+    return `${year}-${month}-${day}`
+}
+
+/**
+ *
+ * @param time The time in format of hh:mm:ss
+ * @param isoDate the date in format of yyyy-mm-dd
+ */
+export function getUnixTimeFromTimeAndISODate(time: string, isoDate: string): number {
+    const date = new Date(`${isoDate}T${time}`)
+    const unixTime = Math.floor(date.getTime() / 1000)
+
+    return unixTime;
 }
 
 /**
  * Converts a time object into a string of hh:mm:ss, or mm:ss if there is no hours.
  * @param time Can be a time object or a string. If it's a string it must be just the time, not the date as well.
+ * @returns The time in a hh:mm:ss format, with 0 padding.
  */
 export function formatTimeFromCamToUTC(time: Time | string): string {
     if (typeof time === "string") {
@@ -135,6 +178,16 @@ export function calculateDuration(timeRange: TimeRange): TimeDuration {
 
 
     return { hours: hours, minutes: minutes, seconds: seconds }
+}
+
+/**
+ * Converts a time duration to just seconds.
+ * @param timeDuration A TimeDuration object that holds the time
+ */
+export function convertDurationToSeconds(timeDuration: TimeDuration): number {
+    const hoursToSecs = timeDuration.hours * 3600 //should be 0 but used anyway.
+    const minsToSecs = timeDuration.minutes * 60
+    return hoursToSecs + minsToSecs + timeDuration.seconds
 }
 
 /**
