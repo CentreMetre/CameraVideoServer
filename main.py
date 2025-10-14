@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, send_file, request, send_from_directory
+from flask import Flask, render_template, jsonify, send_file, request, send_from_directory, session
 
 from logger_conf import logger
 
@@ -134,6 +134,8 @@ def get_file(date, media_subfolder, file_name, action):
     if file_type != "265" and file_type != "jpg":
         return jsonify({"error": "Invalid file type. 'jpg' or '265' are required"}), 400
 
+    #TODO: implement returning a page for when video view/download is requested, then show progress if possible using web sockets
+
     if file_ready:
         if action == "view":
             return send_file(file,
@@ -169,6 +171,13 @@ def search():
     start_time = request.args.get("start_time", "0000")
     end_time = request.args.get("end_time", "1199")
 
+@app.route("/test")
+def test():
+    creds = session.get("user_authenticated")
+    if creds is None:
+        creds = "None"
+    logger.debug("Creds:" + (creds if creds is not None else "none"))
+    return creds
 
 os.makedirs("files/", exist_ok=True)
 app.run(debug=is_debug)
@@ -177,6 +186,8 @@ error.register_error_handlers(app)
 # TODO: Handle if a video file has 999999 the end time, that indicates its not finished recording yet.
 # TODO: Have the ability to view after wrapping, then encode if download is requested.
 # TODO: Add these to readme
-# TODO: Create "amount of images/videos" endpoint, that returns the amount for a given date
+# TODO: Create "amount of images/videos" endpoint, that returns the amount for a given date. Or could just count when retrieved for showing the media
 # TODO: Refactor to use send_from_directory for 0 Server Side Rendering. Do it in user.py as well
 # TODO: Change DB writing/handling so there Isn't empty new lines at the end.
+# TODO: Idea: Have auth be if not authed throw an error for easier redirection. Only need to check on some APIs, might be easier
+# Auth check notes: only need to check on api calls, not page serving, so that would make it easier to check for auth

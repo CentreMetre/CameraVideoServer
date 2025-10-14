@@ -1,0 +1,12 @@
+.query-row {
+    display: flex;
+    justify-content: start;
+}
+
+.query-item {
+    margin-left: 5rem;
+}
+
+.query-title {
+    margin-left: 5rem;
+}

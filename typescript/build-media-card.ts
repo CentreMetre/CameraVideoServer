@@ -1,9 +1,12 @@
 import {
-    calculateDuration,
+    calculateDuration, convertDurationToSeconds,
     extractDateFromFilename,
     extractTimeFromImageFileName,
-    extractTimeRangeFromVideoFileName, formatDateFromCamToGB,
+    extractTimeRangeFromVideoFileName,
+    formatDateFromCamToGB,
+    formatDateFromGBtoISO,
     formatTimeFromCamToUTC,
+    getUnixTimeFromTimeAndISODate,
     TimeDuration,
     TimeRange
 } from "./util.js";
@@ -14,7 +17,7 @@ import {
  */
 export function buildMediaCard(filename: string): HTMLElement {
 
-    console.debug(filename)
+    // console.debug(filename)
 
     if (filename.slice(-3).toLowerCase() === "jpg") {
         return buildImageCard(filename)
@@ -27,15 +30,15 @@ export function buildMediaCard(filename: string): HTMLElement {
 
 function buildVideoCard(filename: string): HTMLElement {
 
-    console.debug("In buildVideoCard for " + filename)
+    // console.debug("In buildVideoCard for " + filename)
 
     // CREATING DATA TO FILL HTML WITH //
 
     let date: string = extractDateFromFilename(filename)
     date = formatDateFromCamToGB(date)
 
-    const mediaType: string = "video"
-    const mediaTypeCapital: string = "Video"
+    const mediaType: "video" = "video"
+    const mediaTypeCapital: "Video" = "Video"
     let recordType: string | undefined = undefined;
     let recordTypeCapital: string | undefined = undefined
 
@@ -52,6 +55,8 @@ function buildVideoCard(filename: string): HTMLElement {
 
     const videoDuration: TimeDuration = calculateDuration(timeRange)
 
+    const videoDurationSeconds = convertDurationToSeconds(videoDuration)
+
     const startTime: string = formatTimeFromCamToUTC(timeRange.startTime)
     const endTime: string = formatTimeFromCamToUTC(timeRange.endTime)
 
@@ -64,6 +69,13 @@ function buildVideoCard(filename: string): HTMLElement {
     card.classList.add("grid-container") // used to have it be a grid for easier management.
     card.classList.add(recordType)
     card.classList.add(mediaType)
+
+    // Use start time since that makes more sense for searching/filtering/sorting
+    card.setAttribute("data-time", getUnixTimeFromTimeAndISODate(startTime, formatDateFromGBtoISO(date)).toString())
+    card.setAttribute("data-media-type", mediaType)
+    card.setAttribute("data-record-type", recordType)
+    card.setAttribute("data-duration-seconds", videoDurationSeconds.toString())
+
 
     // FIRST ROW //
     const dateEl = document.createElement("p")
@@ -110,7 +122,7 @@ function buildVideoCard(filename: string): HTMLElement {
 
 function buildImageCard(filename: string): HTMLElement {
 
-    console.debug("In buildImageCard for " + filename)
+    // console.debug("In buildImageCard for " + filename)
 
     // CREATING DATA TO FILL HTML WITH //
 
@@ -120,8 +132,8 @@ function buildImageCard(filename: string): HTMLElement {
     let time: string = extractTimeFromImageFileName(filename)
     time = formatTimeFromCamToUTC(time)
 
-    const mediaType: string = "image"
-    const mediaTypeCapital: string = "Image"
+    const mediaType: "image" = "image"
+    const mediaTypeCapital: "Image" = "Image"
     let recordType: string | undefined = undefined;
     let recordTypeCapital: string | undefined = undefined
 
@@ -141,10 +153,14 @@ function buildImageCard(filename: string): HTMLElement {
     card.classList.add(recordType)
     card.classList.add(mediaType)
 
+    card.setAttribute("data-time", getUnixTimeFromTimeAndISODate(time, formatDateFromGBtoISO(date)).toString())
+    card.setAttribute("data-media-type", mediaType)
+    card.setAttribute("data-record-type", recordType)
+
     // FIRST ROW
     const dateEl = document.createElement("p")
     dateEl.classList.add("date")
-    dateEl.textContent = date;
+    dateEl.textContent = date
 
     const timeEl = document.createElement("p")
     timeEl.classList.add("time")
@@ -162,7 +178,7 @@ function buildImageCard(filename: string): HTMLElement {
     // THIRD ROW
     const filenameEl = document.createElement("p")
     filenameEl.classList.add("filename")
-    filenameEl.textContent = filename;
+    filenameEl.textContent = filename
 
     // FIRST ROW
     card.appendChild(dateEl)
@@ -225,4 +241,39 @@ export function buildActionButtonsDiv(path: string): HTMLDivElement {
     buttonRowEl.appendChild(downloadButton)
 
     return buttonRowEl;
+}
+
+export function buildFullCardContainer(filename: string, path: string): HTMLDivElement {
+    const mediaCard = buildMediaCard(filename)
+    const buttons = buildActionButtonsDiv(path)
+
+    const fullContainer = document.createElement("div")
+    fullContainer.appendChild(mediaCard)
+    fullContainer.appendChild(buttons)
+
+    fullContainer.classList.add("card-container")
+
+    // console.debug(mediaCard.getAttribute("data-time"))
+    // console.debug(mediaCard.getAttribute("data-media-type"))
+    // console.debug(mediaCard.getAttribute("data-record-type"))
+
+    //Setting data-* attributes to outer card container for searching and filtering
+    fullContainer.setAttribute("data-time", mediaCard.getAttribute("data-time")!)
+    fullContainer.setAttribute("data-media-type", mediaCard.getAttribute("data-media-type")!)
+    fullContainer.setAttribute("data-record-type", mediaCard.getAttribute("data-record-type")!)
+
+    // console.debug(mediaCard.getAttribute("data-media-type"))
+
+    if (mediaCard.getAttribute("data-media-type") === "video") {
+        // console.debug("in video in buildFullCardContainer")
+        fullContainer.setAttribute("data-duration-seconds", mediaCard.getAttribute("data-duration-seconds")!)
+        mediaCard.removeAttribute("data-duration-seconds")
+    }
+
+    //Removing data-* from inner card since they aren't needed any more
+    mediaCard.removeAttribute("data-time")
+    mediaCard.removeAttribute("data-media-type")
+    mediaCard.removeAttribute("data-record-type")
+
+    return fullContainer
 }

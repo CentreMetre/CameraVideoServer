@@ -5,49 +5,54 @@
     <title>Title</title>
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/card.css">
+    <link rel="stylesheet" href="/static/css/media-list.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
+    <h1 id="page-date">?</h1>
+    <div id="filter-inputs">
+        <h3 class="query-title">Filter by:</h3>
 
-    <div id="card-list">
+
+        <div class="query-row">
+            <label for="filter-media-type" class="query-item">Show Media Type:</label>
+            <label for="filter-record-type" class="query-item">Show Record Type:</label>
+        </div>
+
+        <div class="query-row">
+            <select id="filter-media-type" name="filter-media-type" class="query-item">
+                <option value="all">Videos & Images</option>
+                <option value="video">Videos</option>
+                <option value="image">Images</option>
+            </select>
+
+            <select id="filter-record-type" name="filter-record-type" class="query-item">
+                <option value="all">Alert & Periodic</option>
+                <option value="alert">Alert</option>
+                <option value="periodic">Periodic</option>
+            </select>
+        </div>
+
+        <button id="filter-reset">Reset Filters</button>
+    </div>
+
+<!--    <div id="sort-inputs">
+        <h3>Sort by:</h3>
+        <select>
+            <option value="alert">Alert First</option>
+            <option value="periodic">Periodic First</option>
+        </select>
+    </div> -->
+
+    <div id="search-inputs">
 
     </div>
-    <script type="module">
-        import { buildMediaCard, buildActionButton, buildActionButtonsDiv } from "/static/js/build-media-card.js"
-        import { extract_filename_from_path } from      "/static/js/util.js";
 
-        const path = window.location.pathname; // Get the path name to get the date
-        console.debug(path)
 
-        const path_parts = path.split("/");
-        const date = path_parts[path_parts.length - 1] // Split and extract just the date (assumes date is at the end, as it should be unless the endpoint changes)
 
-        console.debug(date)
-
-        const response = await fetch(`/api/${date}/paths`)
-        const paths = await response.json()
-
-        const filenames = []
-
-        for (let path of paths) {
-            filenames.push(extract_filename_from_path(path))
-        }
-
-        for (const path of paths) {
-
-            if (path === "") { // used as temp fix until db is fixed
-                continue
-            }
-
-            const filename = extract_filename_from_path(path)
-            let card = buildMediaCard(filename)
-            document.getElementById("card-list").appendChild(card)
-
-            let buttons = buildActionButtonsDiv(path)
-
-            document.getElementById("card-list").appendChild(buttons)
-        }
-    </script>
+    <div id="card-list">
+    </div>
+    <script src="../static/js/media-card.js" type="module"></script>
 </body>
 </html>
