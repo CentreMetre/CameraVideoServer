@@ -14,7 +14,29 @@ import os
 load_dotenv()
 secret_key = os.getenv("USER_SECRET_KEY")
 db_suffix = os.getenv("DBSUFFIX")
+
 is_debug = os.getenv("IS_DEBUG")
+print(is_debug)
+if is_debug != "False" and is_debug != "True":
+    raise ValueError(f"Invalid value of {is_debug} for IS_DEBUG env var. Should be one of the following:\n" +
+                     "True\n" +
+                     "False\n")
+
+if is_debug == "True":
+    is_debug = True
+if is_debug == "False":
+    is_debug = False
+
+is_dev = os.getenv("IS_DEV")
+print(is_dev)
+if is_dev != "False" and is_dev != "True":
+    raise ValueError(f"Invalid value of {is_dev} for IS_DEV env var. Should be one of the following:\n" +
+                     "True\n" +
+                     "False\n")
+if is_dev == "True":
+    is_dev = True
+if is_dev == "False":
+    is_dev = False
 
 app = Flask(__name__)
 app.secret_key = secret_key
@@ -179,8 +201,14 @@ def test():
     logger.debug("Creds:" + (creds if creds is not None else "none"))
     return creds
 
+print(f"is_debug: {is_debug}")
+print(f"is_dev: {is_dev}")
+
 os.makedirs("files/", exist_ok=True)
-app.run(debug=is_debug)
+if is_dev:
+    print("Running Flask App")
+    app.run(debug=is_debug)
+
 error.register_error_handlers(app)
 # TODO: Have to encode, browsers cant play mp4 wrapped 265
 # TODO: Handle if a video file has 999999 the end time, that indicates its not finished recording yet.
@@ -190,5 +218,5 @@ error.register_error_handlers(app)
 # TODO: Refactor to use send_from_directory for 0 Server Side Rendering. Do it in user.py as well
 # TODO: Change DB writing/handling so there Isn't empty new lines at the end.
 # TODO: Idea: Have auth be if not authed throw an error for easier redirection. Only need to check on some APIs, might be easier
-# TODO: Implement viewing a wrapped instead of encuded file, but have a warning if its warpped
+# TODO: Implement viewing a wrapped instead of encuded file, but have a warning if its wrapped. Also have buttons for deleting files.
 # Auth check notes: only need to check on api calls, not page serving, so that would make it easier to check for auth
