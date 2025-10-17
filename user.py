@@ -2,12 +2,10 @@ import base64
 import os
 import requests
 
-from dotenv import load_dotenv
-from flask import session, jsonify, request, render_template, Blueprint, redirect, url_for, send_from_directory
+from flask import session, jsonify, request, Blueprint, redirect, url_for, send_from_directory
 
 from logger_conf import logger
 
-load_dotenv()
 url = os.getenv("CAMERA_SD_URL")
 
 user_bp = Blueprint('user', __name__)

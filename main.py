@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, send_file, request, send_from_directory, session
+from flask import Flask, jsonify, send_file, request, send_from_directory, session
 
 from logger_conf import logger
 
@@ -6,21 +6,18 @@ import error
 import image
 import video
 from user import user_bp
-from dotenv import load_dotenv
 import camera
 import util
 import os
 
-load_dotenv()
 secret_key = os.getenv("USER_SECRET_KEY")
 db_suffix = os.getenv("DBSUFFIX")
 
 is_debug = os.getenv("IS_DEBUG")
 print(is_debug)
 if is_debug != "False" and is_debug != "True":
-    raise ValueError(f"Invalid value of {is_debug} for IS_DEBUG env var. Should be one of the following:\n" +
-                     "True\n" +
-                     "False\n")
+    print(f"IS_DEBUG is not a known value of {is_debug}. Defaulting to False.")
+    is_debug = False
 
 if is_debug == "True":
     is_debug = True
@@ -30,9 +27,9 @@ if is_debug == "False":
 is_dev = os.getenv("IS_DEV")
 print(is_dev)
 if is_dev != "False" and is_dev != "True":
-    raise ValueError(f"Invalid value of {is_dev} for IS_DEV env var. Should be one of the following:\n" +
-                     "True\n" +
-                     "False\n")
+    print(f"IS_DEBUG is not a known value of {is_debug}. Defaulting to False.")
+    is_dev = False
+
 if is_dev == "True":
     is_dev = True
 if is_dev == "False":

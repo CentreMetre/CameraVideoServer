@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 from flask import session
 
 from logger_conf import logger
@@ -7,8 +6,6 @@ import os
 import re
 
 import error
-
-load_dotenv()
 
 cam_url = os.getenv("CAMERA_SD_URL")
 rec_db = os.getenv("RECDB")
