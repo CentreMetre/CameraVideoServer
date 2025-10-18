@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, send_file, request, send_from_directory, session
+import secrets
 
 from logger_conf import logger
 
@@ -10,6 +11,7 @@ import camera
 import util
 import os
 
+os.environ["USER_SECRET_KEY"] = secrets.token_hex(32)
 secret_key = os.getenv("USER_SECRET_KEY")
 db_suffix = os.getenv("DBSUFFIX")
 
@@ -153,7 +155,7 @@ def get_file(date, media_subfolder, file_name, action):
     if file_type != "265" and file_type != "jpg":
         return jsonify({"error": "Invalid file type. 'jpg' or '265' are required"}), 400
 
-    #TODO: implement returning a page for when video view/download is requested, then show progress if possible using web sockets
+    # TODO: implement returning a page for when video view/download is requested, then show progress if possible using web sockets
 
     if file_ready:
         if action == "view":
@@ -190,6 +192,7 @@ def search():
     start_time = request.args.get("start_time", "0000")
     end_time = request.args.get("end_time", "1199")
 
+
 @app.route("/test")
 def test():
     creds = session.get("user_authenticated")
@@ -197,6 +200,7 @@ def test():
         creds = "None"
     logger.debug("Creds:" + (creds if creds is not None else "none"))
     return creds
+
 
 print(f"is_debug: {is_debug}")
 print(f"is_dev: {is_dev}")
