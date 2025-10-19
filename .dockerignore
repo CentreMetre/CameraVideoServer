@@ -1,7 +1,71 @@
-files/*
-.git
-
+# Byte-compiled / optimized / cache files
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Docker files (optional if you have multiple docker contexts)
+Dockerfile*
+docker-compose*.yml
+
+# Test / coverage files
+coverage/
+htmlcov/
+*.cover
+*.py,cover
+nosetests.xml
+pytest_cache/
+.tox/
+
+# Environment variables and secrets
+.env
+
+# Node / frontend (if applicable)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Editor/IDE metadata (general)
+*.swp            # Vim swap files
+
+# Temporary files
+*.tmp
+*.bak
+*.old
+*.backup
+
+files/*
+logs/*/*
+!logs/*
+typescript

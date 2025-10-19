@@ -12,5 +12,3 @@ RUN pip install gunicorn
 COPY . .
 
 ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:8000", "main:app"]
-
-#TODO: Add volume

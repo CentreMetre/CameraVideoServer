@@ -15,7 +15,7 @@ def log_uncaught_error(e):
 
 def log_error(e, note=""):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    directory = "errors/error"
+    directory = "logs/error"
     filename = os.path.join(directory, f"{timestamp}.log")
 
     # Ensure the directory exists
