@@ -16,7 +16,7 @@ if docker pull "$IMAGE"; then
         -v myapp-logs:/app/logs \
         -v myapp-files:/app/files \
         -p 5000:8000 \
-        -e CAMERA_SD_URL="http://192.168.0.40/sd/"
+        -e CAMERA_SD_URL="http://192.168.0.40/sd/" \
         "$IMAGE"
 else
     echo "Failed to pull image. Exiting."
