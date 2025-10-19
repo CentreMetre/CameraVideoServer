@@ -1,7 +1,8 @@
 import logging
+import os
 from datetime import datetime
 
-from flask import jsonify, request
+from flask import jsonify, request, redirect, url_for
 
 
 def log_uncaught_error(e):
@@ -14,7 +15,11 @@ def log_uncaught_error(e):
 
 def log_error(e, note=""):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    filename = f"errors/error/{timestamp}.log"
+    directory = "errors/error"
+    filename = os.path.join(directory, f"{timestamp}.log")
+
+    # Ensure the directory exists
+    os.makedirs(directory, exist_ok=True)
 
     logger = logging.getLogger(filename)
     logger.setLevel(logging.ERROR)
@@ -34,9 +39,9 @@ def log_error(e, note=""):
 
 
 """
-==============
-ERROR HANDLERS
-==============
+===================
+HTTP ERROR HANDLERS
+===================
 """
 
 
@@ -44,6 +49,7 @@ def handle_404(e, description=""):
     if not description:
         description = f"Resource at {request.path} was not found."
     return jsonify({"error": e.name, "code": e.code, "description": description}), 404
+
 
 """
 ====================
@@ -61,3 +67,22 @@ def register_error_handlers(app):
     @app.errorhandler(404)
     def handle_flask_exp_404(e):
         handle_404(e)
+
+    @app.errorhandler(NotAuthedError)
+    def handle_not_authed(e):
+        # Needed instead of just 'login' because of blueprints
+        return redirect(url_for("user.get_login_page", reason="noAuth"))
+
+
+"""
+====================
+CUSTOM ERROR CLASSES
+====================
+"""
+
+
+class NotAuthedError(Exception):
+    def __init__(self, message, status_code=401):
+        super().__init__(message)
+        self.message = message
+        self.status_code = status_code

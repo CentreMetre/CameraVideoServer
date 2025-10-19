@@ -1,4 +1,4 @@
-from flask import session
+from flask import session, send_from_directory
 
 from logger_conf import logger
 import requests
@@ -18,6 +18,11 @@ def get_index_page():
     Returns: The HTML of the index page.
     """
     response = requests.get(cam_url, headers=get_headers(), stream=True)
+    content = response.content  # read all bytes at once
+    text = content.decode(response.encoding or 'utf-8')  # decode to string
+
+    if "Error: username or password error,please input again." in text:
+        raise error.NotAuthedError("Could not retrieve camera index page: Not logged in.")
     return response.text
 
 

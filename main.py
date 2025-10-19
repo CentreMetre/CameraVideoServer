@@ -15,6 +15,10 @@ os.environ["USER_SECRET_KEY"] = secrets.token_hex(32)
 secret_key = os.getenv("USER_SECRET_KEY")
 db_suffix = os.getenv("DBSUFFIX")
 
+os.environ["IMGDB"] = "imgdata.db"
+os.environ["RECDB"] = "recdata.db"
+os.environ["DBSUFFIX"] = "data.db"
+
 is_debug = os.getenv("IS_DEBUG")
 print(is_debug)
 if is_debug != "False" and is_debug != "True":
@@ -40,6 +44,7 @@ if is_dev == "False":
 app = Flask(__name__)
 app.secret_key = secret_key
 app.register_blueprint(user_bp)
+error.register_error_handlers(app)
 
 
 @app.route("/")
@@ -54,6 +59,8 @@ def index():
 def get_dates():
     cam_index = camera.get_index_page()
     dates = util.get_current_dates_from_sd_page(cam_index)
+
+
 
     return jsonify(dates), 200
 
@@ -195,22 +202,24 @@ def search():
 
 @app.route("/test")
 def test():
-    creds = session.get("user_authenticated")
-    if creds is None:
-        creds = "None"
-    logger.debug("Creds:" + (creds if creds is not None else "none"))
-    return creds
-
+    raise error.NotAuthedError("Test not authed.")
+    # creds = session.get("user_authenticated")
+    # if creds is None:
+    #     creds = "None"
+    # logger.debug("Creds:" + (creds if creds is not None else "none"))
+    # return creds
 
 print(f"is_debug: {is_debug}")
 print(f"is_dev: {is_dev}")
 
+
 os.makedirs("files/", exist_ok=True)
 if is_dev:
+    if(is_debug):
+        print(os.environ)
     print("Running Flask App")
     app.run(debug=is_debug)
 
-error.register_error_handlers(app)
 # TODO: Have to encode, browsers cant play mp4 wrapped 265
 # TODO: Handle if a video file has 999999 the end time, that indicates its not finished recording yet.
 # TODO: Have the ability to view after wrapping, then encode if download is requested.
