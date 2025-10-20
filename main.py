@@ -41,7 +41,7 @@ if is_dev == "True":
 if is_dev == "False":
     is_dev = False
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static", static_url_path="/static")
 app.secret_key = secret_key
 app.register_blueprint(user_bp)
 error.register_error_handlers(app)
@@ -200,14 +200,17 @@ def search():
     end_time = request.args.get("end_time", "1199")
 
 
+@app.route("/favicon.ico")
+def get_favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, 'static'),
+        'favicon.ico',
+        mimetype='image/vnd.microsoft.icon'
+    )
+
 @app.route("/test")
 def test():
-    raise error.NotAuthedError("Test not authed.")
-    # creds = session.get("user_authenticated")
-    # if creds is None:
-    #     creds = "None"
-    # logger.debug("Creds:" + (creds if creds is not None else "none"))
-    # return creds
+    return app.send_static_file("favicon.ico")
 
 print(f"is_debug: {is_debug}")
 print(f"is_dev: {is_dev}")
