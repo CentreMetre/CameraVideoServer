@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMAGE="centremetre/camera-server:latest"
+IMAGE="centremetre/camera-server:latest-arm64"
 CONTAINER="camera-server"
 
 # Pull the latest image

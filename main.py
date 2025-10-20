@@ -12,12 +12,17 @@ import util
 import os
 
 os.environ["USER_SECRET_KEY"] = secrets.token_hex(32)
+# os.environ["IMGDB"] = "imgdata.db"
+# os.environ["RECDB"] = "recdata.db"
+# os.environ["DBSUFFIX"] = "data.db"
+
 secret_key = os.getenv("USER_SECRET_KEY")
 db_suffix = os.getenv("DBSUFFIX")
 
-os.environ["IMGDB"] = "imgdata.db"
-os.environ["RECDB"] = "recdata.db"
-os.environ["DBSUFFIX"] = "data.db"
+print(f"secret key: {os.getenv('USER_SECRET_KEY')}")
+print(f"db suffix: {os.getenv('DBSUFFIX')}")
+print(f"imgdb name: {os.getenv('IMGDB')}")
+print(f"recdb name: {os.getenv('RECDB')}")
 
 is_debug = os.getenv("IS_DEBUG")
 print(is_debug)
@@ -210,7 +215,7 @@ def get_favicon():
 
 @app.route("/test")
 def test():
-    return app.send_static_file("favicon.ico")
+    return os.getenv("USER_SECRET_KEY")
 
 print(f"is_debug: {is_debug}")
 print(f"is_dev: {is_dev}")

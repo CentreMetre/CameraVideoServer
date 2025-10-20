@@ -3,7 +3,17 @@ LABEL authors="centremetre"
 
 WORKDIR /app
 
+# Install ffmpeg
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ffmpeg && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
+
+ENV IMGDB=imgdata.db
+ENV RECDB=recdata.db
+ENV DBSUFFIX=data.db
 
 RUN pip install --no-cache-dir -r requirements.txt
 
