@@ -37,6 +37,9 @@ def download_and_process_database(date, data_media_name):
     Return: The path the database was stored to. It should be `files/{date}/{database_name}data.db`.
     """
 
+    logger.debug(f"In download_and_process_database({date}, {data_media_name})")
+    logger.debug(f"Headers: {get_headers()}")
+
     file_type = ""
 
     if data_media_name != "rec" and data_media_name != "img":
@@ -50,7 +53,7 @@ def download_and_process_database(date, data_media_name):
     rec_db_url = f"{cam_url}/{date}/{data_media_name}data.db"
 
     try:
-        response = requests.get(rec_db_url, get_headers())
+        response = requests.get(rec_db_url, headers=get_headers())
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
         if date in get_index_page():
@@ -119,7 +122,9 @@ def download_file(date, media_subfolder, file_name):
 
     address = f"{cam_url}/{date}/{media_subfolder}/{file_name}"
     logger.debug(f"Calling {address} to download file")
-    response = requests.get(address, get_headers())
+    response = requests.get(address, headers=get_headers())
+
+    logger.debug(f"Request headers actually sent: {response.request.headers}")
     logger.debug(f"Finished Downloading.")
     if response.status_code != 200:
         raise Exception(f"Couldn't get file off camera. Status code: {response.status_code}")

@@ -32,8 +32,12 @@ def log_error(e, note=""):
 
     logger.addHandler(file_handler)
 
-    note = f"Note:\n{note}\n\n\n" if True else ''
-    logger.error(f"{note}{e}", exc_info=True)
+    note_print = ""
+
+    if note != "":
+        note_print = f"Note:\n{note}\n\n=========\nNote Over\n=========\n"
+
+    logger.error(f"{note_print}{e}", exc_info=True)
 
     logger.removeHandler(file_handler)
 

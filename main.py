@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_file, request, send_from_directory, session
+from flask import Flask, jsonify, send_file, request, send_from_directory
 import secrets
 
 from logger_conf import logger
@@ -64,9 +64,6 @@ def index():
 def get_dates():
     cam_index = camera.get_index_page()
     dates = util.get_current_dates_from_sd_page(cam_index)
-
-
-
     return jsonify(dates), 200
 
 
@@ -131,7 +128,13 @@ def get_media_paths_from_date(date):
     """
     img_list = util.load_database_file(date, "img")
 
+    if img_list is None:
+        raise TypeError("This should be a list of images. Not None.")
+
     rec_list = util.load_database_file(date, "rec")
+
+    if rec_list is None:
+        raise TypeError("This should be a list of videos. Not None.")
 
     full_list = img_list + rec_list
 
@@ -213,10 +216,10 @@ def get_favicon():
         mimetype='image/vnd.microsoft.icon'
     )
 
+
 @app.route("/test")
 def test():
-    return os.getenv("USER_SECRET_KEY")
-
+    return "test"
 print(f"is_debug: {is_debug}")
 print(f"is_dev: {is_dev}")
 
@@ -228,13 +231,7 @@ if is_dev:
     print("Running Flask App")
     app.run(debug=is_debug)
 
-# TODO: Have to encode, browsers cant play mp4 wrapped 265
-# TODO: Handle if a video file has 999999 the end time, that indicates its not finished recording yet.
-# TODO: Have the ability to view after wrapping, then encode if download is requested.
 # TODO: Add these to readme
-# TODO: Create "amount of images/videos" endpoint, that returns the amount for a given date. Or could just count when retrieved for showing the media
-# TODO: Refactor to use send_from_directory for 0 Server Side Rendering. Do it in user.py as well
 # TODO: Change DB writing/handling so there Isn't empty new lines at the end.
-# TODO: Idea: Have auth be if not authed throw an error for easier redirection. Only need to check on some APIs, might be easier
 # TODO: Implement viewing a wrapped instead of encuded file, but have a warning if its wrapped. Also have buttons for deleting files.
 # Auth check notes: only need to check on api calls, not page serving, so that would make it easier to check for auth
