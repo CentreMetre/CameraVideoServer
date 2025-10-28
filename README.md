@@ -73,12 +73,12 @@ Database example for recdata db:
 |       base_name       | on_camera | local_has_265 | local_has_wrapped_265 | local_has_264 |        path         |
 |-----------------------|-----------|---------------|-----------------------|---------------|---------------------|
 | P251020_000000_001000 | True      | False         | True                  | True          | 20251020/record000/ |
-base_name (TEXT) - Stores the filename without the extension.
-on_camera (INTEGER) - Boolean (0 or 1) for storing whether the file still exists on the camera (files get deleted automatically for space constraints).
-local_has_265 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in unencoded H.265/HEVC format.
-local_has_wrapped_265 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in the wrapped (NOT encoded) form (H.265 in MP4).
-local_has_264 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in the encoded form (H.264).
-path (TEXT) - The relative path up to the file from the servers working directory, e.g. 20251028/images000/
+base_name (TEXT) - Stores the filename without the extension.<br>
+on_camera (INTEGER) - Boolean (0 or 1) for storing whether the file still exists on the camera (files get deleted automatically for space constraints).<br>
+local_has_265 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in unencoded H.265/HEVC format.<br>
+local_has_wrapped_265 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in the wrapped (NOT encoded) form (H.265 in MP4).<br>
+local_has_264 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in the encoded form (H.264).<br>
+path (TEXT) - The relative path up to the file from the servers working directory, e.g. 20251028/images000/<br>
 
 
 # Local vs Camera databases
