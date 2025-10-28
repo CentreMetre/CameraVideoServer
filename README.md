@@ -19,13 +19,16 @@ CameraServer is used for providing a better web interface from my security camer
   - [ ] Implement storage limit warning (2)
   - [ ] Implement deleting old files when storage is full (2)
   - [ ] Handle video not finishing encoding 
+  - [ ] Handle different video codecs and wrapping.
+  - [ ] Handle different video codecs and wrapping distribution. Add "(Wrapped)" to requested wrapped video files.
 - [X] Implement Camera DB files processing (2)
   - [ ] Implement auto updating database files if it is today's and thus not upto date.
 - [ ] Implement path traversal protection (2)
 - [ ] Implement error handling
   - [ ] HTTP Errors (4xx and 5xx)
 - [/?] Handle a video not being finished recording yet on the camera. (1)
-- [ ] Migrate to use SQLite (2)
+- [ ] Migrate to use SQLite. (2)
+  - [ ] Handle different video codecs and wrapping.
 - [ ] Implement redirecting to login screen if camera is attempted to be accessed without being logged in
 
 ## Deployment
@@ -33,6 +36,9 @@ CameraServer is used for providing a better web interface from my security camer
 - [X] Create docker run file
 - [X] Deploy a version
 
+# Designs
+
+## File Directory
 Will store files like this on the server:
 ```
 CameraVideoServer/
@@ -46,6 +52,34 @@ CameraVideoServer/
 │  │  ├─ imgdata.db
 │  │  ├─ recdata.db
 ```
+
+## Databases
+### Images
+Database example for imgdata db:
+
+|      file_name      |      location       | is_downloaded |
+|---------------------|---------------------|---------------|
+| A25102006312300.jpg | 20251020/images000/ | True          |
+| A25102006312300.jpg | 20251020/images000/ | False         |
+file_name (TEXT) - The name of the file. <br>
+location (TEXT) - The location of the file, excluding the filename.<br>
+is_downloaded (INTEGER) - Boolean (0 or 1) for storing whether the file has been downloaded to the local machine/server.
+
+### Videos
+Database example for recdata db:
+
+(undecided, but best so far)
+
+|       base_name       | on_camera | local_has_265 | local_has_wrapped_265 | local_has_264 |        path         |
+|-----------------------|-----------|---------------|-----------------------|---------------|---------------------|
+| P251020_000000_001000 | True      | False         | True                  | True          | 20251020/record000/ |
+base_name (TEXT) - Stores the filename without the extension.
+on_camera (INTEGER) - Boolean (0 or 1) for storing whether the file still exists on the camera (files get deleted automatically for space constraints).
+local_has_265 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in unencoded H.265/HEVC format.
+local_has_wrapped_265 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in the wrapped (NOT encoded) form (H.265 in MP4).
+local_has_264 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in the encoded form (H.264).
+path (TEXT) - The relative path up to the file from the servers working directory, e.g. 20251028/images000/
+
 
 # Local vs Camera databases
 This server will have databases for all available media. Whether on the camera or on the server.
