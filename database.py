@@ -6,13 +6,16 @@ from types import MediaType
 # Don't import camera, for separation of concerns.
 
 # Database example for imgdata db:
-# +=====================+========================================+===============+
-# |      file_name      |                location                | is_downloaded |
-# +=====================+========================================+===============+
-# | A25102006312300.jpg | 20251020/images000/A25102006312300.jpg | True          |
-# +---------------------+----------------------------------------+---------------+
-# | A25102006312300.jpg | 20251020/images000/A25102006573600.jpg | False         |
-# +---------------------+----------------------------------------+---------------+
+# +=====================+=====================+===============+
+# |      file_name      |      location       | is_downloaded |
+# +=====================+=====================+===============+
+# | A25102006312300.jpg | 20251020/images000/ | True          |
+# +---------------------+---------------------+---------------+
+# | A25102006312300.jpg | 20251020/images000/ | False         |
+# +---------------------+---------------------+---------------+
+# file_name (TEXT) - The name of the file.
+# location (TEXT) - The location of the file, excluding the filename.
+# is_downloaded (INTEGER) - Boolean (0 or 1) for storing whether the file has been downloaded to the local machine/server.
 
 # Database example for recdata db:
 # +===========================+===========================+===========================+=====================+
