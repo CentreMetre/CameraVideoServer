@@ -17,37 +17,7 @@ from types import MediaType
 # location (TEXT) - The location of the file, excluding the filename.
 # is_downloaded (INTEGER) - Boolean (0 or 1) for storing whether the file has been downloaded to the local machine/server.
 
-# Database example for recdata db:
-# +===========================+===========================+===========================+=====================+
-# |     camera_file_name      |   local_file_unencoded    |    local_file_encoded     |        path         |
-# +===========================+===========================+===========================+=====================+
-# | NULL                      | P251020_000000_000000.265 | P251020_000000_000000.mp4 | 20251020/record000/ |
-# +---------------------------+---------------------------+---------------------------+---------------------+
-# | P251020_000000_001000.265 | P251020_000000_001000.265 | P251020_000000_001000.mp4 | 20251020/record000/ |
-# +---------------------------+---------------------------+---------------------------+---------------------+
-# | P251020_001000_002000.265 | P251020_001000_002000.265 | NULL                      | 20251020/record000/ |
-# +---------------------------+---------------------------+---------------------------+---------------------+
-# | P251020_005001_010001.265 | NULL                      | NULL                      | 20251020/record000/ |
-# +---------------------------+---------------------------+---------------------------+---------------------+
-# (This example is not exhaustive of the possible combinations on a row. Any combination is possible, as long as path is
-# populated if any of the other columns are populated)
-# camera_file_name - The name of the file on the camera. NULL if its no longer on the camera.
-# local_file_unencoded - The name of the file that has been downloaded but not encoded.
-# local_file_encoded - The name of the file that has been.
-# path - The path upto, and excluding, the filename. Is the same on local or the camera.
-
-# Database example 2 for recdata db:
-# +===========================+===========================+==============+=========================+=====================+
-# |      file_unencoded       |       file_encoded        | is_on_camera | is_downloaded_unencoded |        path         |
-# +===========================+===========================+==============+=========================+=====================+
-# | P251020_010001_011001.265 | P251020_010001_011001.mp4 | True         | True                    | 20251020/record000/ |
-# +---------------------------+---------------------------+--------------+-------------------------+---------------------+
-# file_unencoded - text - Filename of the unencoded file.
-# file_encoded - text - Filename of the encoded file.
-# is_on_camera - boolean - If the file is still on the camera or not.
-# is_downloaded_unencoded
-
-# Database example 3 for recdata db (best so far):
+# Database example for recdata db (best so far):
 # +=======================+===========+===============+=======================+===============+=====================+
 # |       base_name       | on_camera | local_has_265 | local_has_wrapped_265 | local_has_264 |        path         |
 # +=======================+===========+===============+=======================+===============+=====================+
@@ -60,8 +30,8 @@ from types import MediaType
 # local_has_264 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in the encoded form (H.264).
 # path (TEXT) - The relative path up to the file from the servers working directory, e.g. 20251028/images000/
 
-image_db_name = os.environ["RECDB"] = "recdata.db"
-rec_db_name = os.environ["IMGDB"] = "imgdata.db"
+rec_db_name = os.environ["RECDB"] = "recdata.db"
+image_db_name = os.environ["IMGDB"] = "imgdata.db"
 
 
 def get_db_connection(date, media_type) -> sql.Connection:
@@ -73,7 +43,7 @@ def get_db_connection(date, media_type) -> sql.Connection:
     Parameters
     ----------
     date: str
-        The date of the media to get the DB connection for in the format of "yyyymmdd", e.g. 20251023.
+        The date of the media to get the DB connection for in the format of yyyymmdd, e.g. 20251023.
     media_type: MediaType
         Enum indicating the media type.
 
@@ -82,6 +52,7 @@ def get_db_connection(date, media_type) -> sql.Connection:
     sqlite3.Connection
         The connection to the DB file.
     """
+
     # db = "" # Not needed because of implicit declaration
 
     if media_type == MediaType.IMAGE:
@@ -89,8 +60,76 @@ def get_db_connection(date, media_type) -> sql.Connection:
     else:
         db = rec_db_name
 
-    connection = sql.connect(f"{date}/{db}")
+    os.makedirs(f"files/{date}", exist_ok=True)
+
+    connection = sql.connect(f"files/{date}/{db}")
 
     return connection
 
-# Camera should handle camera IO and importantly db file cleaning, not the database.py
+
+def init_db(date, media_type):
+    """
+    Create an SQLite DB file.
+
+    Creates an SQLite DB file for eiter images or videos on a specific date.
+
+    Parameters
+    ----------
+    date: str
+        The date of the media to create the DB for in the format of yyyymmdd, e.g. 20251023.
+    media_type: MediaType
+        Enum indicating the media type.
+    """
+
+    create_image_table = """
+    create table images (
+      file_name TEXT,
+      location TEXT,
+      is_downloaded BOOLEAN
+    );
+    """
+
+    create_video_table = """"""
+
+    # Getting connection this way is safer since it reduces the risk of the user initialising the DB in the wrong file,
+    # but less modular/DRY.
+    con = get_db_connection(date, media_type)
+    cur = con.cursor()
+
+    # os.makedirs not needed since that's done in connection creation.
+    # os.makedirs(f"files/{date}")
+
+    if media_type == MediaType.IMAGE:
+        cur.execute(create_image_table)
+    else:
+        cur.execute(create_video_table)
+
+
+def insert_image_row(connection, full_path):
+    """
+    Inserts a row in an image DB.
+
+    Inserts and populates a row in the image DB for the provided connection with the file name and location.
+
+    Parameters
+    ----------
+    connection: sqlite3.Connection
+        The connection to the SQLite database.
+
+    full_path: string
+        The full path of the image file. E.g. 20251020/images000/A25102006312300.jpg
+    """
+
+    path_sections = full_path.split("/")
+
+    date = path_sections[-3]
+
+    file_name = path_sections[-1]
+
+    # Done like this incase "sd" is prepended
+    location = f"{date}/{path_sections[-2]}"
+
+
+# CHOICES
+# Camera should handle camera IO and importantly db file cleaning, not the test_database.py
+# Make user provide connection. Makes it so this doesn't have to get the date from the file name. That can be got easier.
