@@ -1,9 +1,8 @@
 import os
 import sqlite3 as sql
 
-from types import MediaType
-
 import util
+from media_types import MediaType
 
 # Don't import camera, for separation of concerns.
 
@@ -161,9 +160,7 @@ def insert_image_row(full_path):
     VALUES ('{file_name}', '{location}', false);
     """ # is_downloaded is False by default because this is creating the row and no media is downloaded yet.
 
-    con.execute(insert_query)
-
-    con.close()
+    commit_query(con, insert_query)
 
 
 def update_image_downloaded(file_name, value):
@@ -184,9 +181,8 @@ def update_image_downloaded(file_name, value):
     update images set is_downloaded = {value};
     """
 
-    con.execute(update_query)
+    commit_query(con, update_query)
 
-    con.close()
 
 def delete_image_row(file_name):
     """
@@ -206,9 +202,24 @@ def delete_image_row(file_name):
     DELETE FROM images where file_name is '{file_name}';
     """
 
-    con.execute(delete_query)
+    commit_query(con, delete_query)
 
-    con.close()
+def commit_query(connection, query):
+    """
+    Util function to commit a query.
+
+    Commits a query with a connection, and then closes the connection. Used for modifying data, not reading data.
+
+    Parameters
+    ----------
+    connection:  sql.Connection
+        The connection to the database.
+    query: str
+        The query to do on the database.
+    """
+    connection.execute(query)
+    connection.commit()
+    connection.close()
 
 # CHOICES
 # Camera should handle camera IO and importantly db file cleaning, not the test_database.py

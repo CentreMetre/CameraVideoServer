@@ -281,6 +281,7 @@ def convert_short_date_to_long_date_ISO(data):
     Converts a short date to a long date.
 
     Converts a date stored in file names to their longer version, e.g. 251020 to 20251020.
+    Checks if a long date has already been provided and returns that.
 
     Parameters
     ----------
@@ -288,6 +289,8 @@ def convert_short_date_to_long_date_ISO(data):
         Can either be a full filename, or just the date. E.g. A25102006312300.jpg, A251020, 251020 etc
     """
     data = data.lstrip("AP")
+    if data.startswith("20"):  # Checks if a long date has been passed already. Luckily it's past the year 2020.
+        return data[:8]
     data = data[:6]
     data = "20" + data
     return data
