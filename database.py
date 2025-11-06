@@ -3,6 +3,8 @@ import sqlite3 as sql
 
 from types import MediaType
 
+import util
+
 # Don't import camera, for separation of concerns.
 
 # Database example for imgdata db:
@@ -13,6 +15,7 @@ from types import MediaType
 # +---------------------+---------------------+---------------+
 # | A25102006312300.jpg | 20251020/images000/ | False         |
 # +---------------------+---------------------+---------------+
+# NOTE: Existence of an image row indicated if the file is available on the camera, no separate column of that.
 # file_name (TEXT) - The name of the file.
 # location (TEXT) - The location of the file, excluding the filename.
 # is_downloaded (INTEGER) - Boolean (0 or 1) for storing whether the file has been downloaded to the local machine/server.
@@ -60,12 +63,35 @@ def get_db_connection(date, media_type) -> sql.Connection:
     else:
         db = rec_db_name
 
+    # Makes dirs only
     os.makedirs(f"files/{date}", exist_ok=True)
 
+    # Makes file if it doesn't exist
     connection = sql.connect(f"files/{date}/{db}")
 
     return connection
 
+def get_db_con_from_short_date(date, media_type) -> sql.Connection :
+    """
+    Returns connection to a DB file using a short cam date.
+
+    Creates a connection, and creates the file if it doesn't yet exist.
+
+    Parameters
+    ----------
+    short_date: str
+        The date of the media to get the DB connection for in the format of any string accepted by
+        util.convert_short_date_to_long_date_ISO. E.g. a full filename could be provided.
+    media_type: MediaType
+        Enum indicating the media type.
+
+    Returns
+    -------
+    sqlite3.Connection
+        The connection to the DB file.
+    """
+    date = util.convert_short_date_to_long_date_ISO(date)
+    return get_db_connection(date, media_type)
 
 def init_db(date, media_type):
     """
@@ -104,8 +130,10 @@ def init_db(date, media_type):
     else:
         cur.execute(create_video_table)
 
+    con.close()
 
-def insert_image_row(connection, full_path):
+
+def insert_image_row(full_path):
     """
     Inserts a row in an image DB.
 
@@ -113,10 +141,7 @@ def insert_image_row(connection, full_path):
 
     Parameters
     ----------
-    connection: sqlite3.Connection
-        The connection to the SQLite database.
-
-    full_path: string
+    full_path: str
         The full path of the image file. E.g. 20251020/images000/A25102006312300.jpg
     """
 
@@ -124,12 +149,67 @@ def insert_image_row(connection, full_path):
 
     date = path_sections[-3]
 
+    con = get_db_connection(date, MediaType.IMAGE)
+
     file_name = path_sections[-1]
 
     # Done like this incase "sd" is prepended
     location = f"{date}/{path_sections[-2]}"
 
+    insert_query = f"""
+    INSERT INTO images (file_name, location, is_downloaded)
+    VALUES ('{file_name}', '{location}', false);
+    """ # is_downloaded is False by default because this is creating the row and no media is downloaded yet.
+
+    con.execute(insert_query)
+
+    con.close()
+
+
+def update_image_downloaded(file_name, value):
+    """
+    Update if the image is downloaded in the DB.
+
+    Parameters
+    ----------
+    file_name: str
+        The filename of the row to update. E.g. A25102006312300.jpg
+    value: bool
+        The value to change is_downloaded to.
+    """
+
+    con = get_db_con_from_short_date(file_name, MediaType.IMAGE)
+
+    update_query = f"""
+    update images set is_downloaded = {value};
+    """
+
+    con.execute(update_query)
+
+    con.close()
+
+def delete_image_row(file_name):
+    """
+    Delete a row from the DB.
+
+    Deletes a row from the DB, used if the file is no longer existent on the cam or locally.
+
+    Parameters
+    ----------
+    file_name: str
+        The filename of the row to delete. E.g. A25102006312300.jpg
+    """
+
+    con = get_db_con_from_short_date(file_name, MediaType.IMAGE)
+
+    delete_query = f"""
+    DELETE FROM images where file_name is '{file_name}';
+    """
+
+    con.execute(delete_query)
+
+    con.close()
 
 # CHOICES
 # Camera should handle camera IO and importantly db file cleaning, not the test_database.py
-# Make user provide connection. Makes it so this doesn't have to get the date from the file name. That can be got easier.
+# Make each functions open and close their own connections. Makes it safer so that the wrong connection isn't provided.

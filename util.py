@@ -275,3 +275,19 @@ def extract_filename_from_path(filepath: str) -> str:
     parts = filepath.split("/")
 
     return parts[-1]
+
+def convert_short_date_to_long_date_ISO(data):
+    """
+    Converts a short date to a long date.
+
+    Converts a date stored in file names to their longer version, e.g. 251020 to 20251020.
+
+    Parameters
+    ----------
+    data: str
+        Can either be a full filename, or just the date. E.g. A25102006312300.jpg, A251020, 251020 etc
+    """
+    data = data.lstrip("AP")
+    data = data[:6]
+    data = "20" + data
+    return data
