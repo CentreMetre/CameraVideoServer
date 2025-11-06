@@ -6,7 +6,8 @@ import tempfile
 from unittest import mock
 import pytest
 
-import database as db  # replace with the actual module name
+import db.image_db
+from db import database as db
 from media_types import MediaType  # your own media_types.py
 
 
@@ -57,7 +58,7 @@ def test_insert_image_row_adds_entry():
 
     path = f"{date}/images000/A25102006312300.jpg"
     os.makedirs(f"files/{date}/images000", exist_ok=True)
-    db.insert_image_row(path)
+    db.image_db.insert_image_row(path)
 
     con = sqlite3.connect(f"files/{date}/imgdata.db")
     cur = con.cursor()
@@ -73,9 +74,9 @@ def test_update_image_downloaded_updates_value(mock_util):
 
     path = f"{date}/images000/A25102006312300.jpg"
     os.makedirs(f"files/{date}/images000", exist_ok=True)
-    db.insert_image_row(path)
+    db.image_db.insert_image_row(path)
 
-    db.update_image_downloaded("A25102006312300.jpg", True)
+    db.image_db.update_image_downloaded("A25102006312300.jpg", True)
 
     con = sqlite3.connect(f"files/{date}/imgdata.db")
     cur = con.cursor()
@@ -91,9 +92,9 @@ def test_delete_image_row_removes_entry(mock_util):
 
     path = f"{date}/images000/A25102006312300.jpg"
     os.makedirs(f"files/{date}/images000", exist_ok=True)
-    db.insert_image_row(path)
+    db.image_db.insert_image_row(path)
 
-    db.delete_image_row("A25102006312300.jpg")
+    db.image_db.delete_image_row("A25102006312300.jpg")
 
     con = sqlite3.connect(f"files/{date}/imgdata.db")
     cur = con.cursor()
