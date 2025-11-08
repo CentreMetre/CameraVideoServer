@@ -57,7 +57,7 @@ CameraVideoServer/
 ### Images
 Database example for imgdata db:
 
-|      file_name      |      location       | is_downloaded |
+|      file_name      |        path         | is_downloaded |
 |---------------------|---------------------|---------------|
 | A25102006312300.jpg | 20251020/images000/ | True          |
 | A25102006312300.jpg | 20251020/images000/ | False         |
