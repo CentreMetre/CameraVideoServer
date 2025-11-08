@@ -6,18 +6,7 @@ from media_types import MediaType
 
 # Don't import camera, for separation of concerns.
 
-# Database example for recdata db (best so far):
-# +=======================+===========+===============+=======================+===============+=====================+
-# |       base_name       | on_camera | local_has_265 | local_has_wrapped_265 | local_has_264 |        path         |
-# +=======================+===========+===============+=======================+===============+=====================+
-# | P251020_000000_001000 | True      | False         | True                  | True          | 20251020/record000/ |
-# +-----------------------+-----------+---------------+-----------------------+---------------+---------------------+
-# base_name (TEXT) - Stores the filename without the extension.
-# on_camera (INTEGER) - Boolean (0 or 1) for storing whether the file still exists on the camera (files get deleted automatically for space constraints).
-# local_has_265 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in unencoded H.265/HEVC format.
-# local_has_wrapped_265 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in the wrapped (NOT encoded) form (H.265 in MP4).
-# local_has_264 (INTEGER) - Boolean (0 or 1) for storing whether the file exists on the local machine/server in the encoded form (H.264).
-# path (TEXT) - The relative path up to the file from the servers working directory, e.g. 20251028/images000/
+
 
 rec_db_name = os.environ["RECDB"] = "recdata.db"
 image_db_name = os.environ["IMGDB"] = "imgdata.db"
@@ -57,15 +46,16 @@ def get_db_connection(date, media_type) -> sql.Connection:
 
     return connection
 
+
 def get_db_con_from_short_date(date, media_type) -> sql.Connection :
     """
-    Returns connection to a DB file using a short cam date.
+    Returns connection to a DB file using a short cam date, e.g. 251023 instead of 20251023.
 
     Creates a connection, and creates the file if it doesn't yet exist.
 
     Parameters
     ----------
-    short_date: str
+    date: str
         The date of the media to get the DB connection for in the format of any string accepted by
         util.convert_short_date_to_long_date_ISO. E.g. a full filename could be provided.
     media_type: MediaType
@@ -79,11 +69,12 @@ def get_db_con_from_short_date(date, media_type) -> sql.Connection :
     date = util.convert_short_date_to_long_date_ISO(date)
     return get_db_connection(date, media_type)
 
+
 def init_db(date, media_type):
     """
     Create an SQLite DB file.
 
-    Creates an SQLite DB file for eiter images or videos on a specific date.
+    Creates an SQLite DB file for either images or videos on a specific date.
 
     Parameters
     ----------
@@ -96,12 +87,21 @@ def init_db(date, media_type):
     create_image_table = """
     create table images (
       file_name TEXT,
-      location TEXT,
+      path TEXT,
       is_downloaded BOOLEAN
     );
     """
 
-    create_video_table = """"""
+    create_video_table = """
+    create table videos (
+    base_name TEXT,
+    on_camera BOOLEAN,
+    local_has_265 BOOLEAN,
+    local_has_wrapped_265 BOOLEAN,
+    local_has_264 BOOLEAN,
+    path text
+    );
+    """
 
     # Getting connection this way is safer since it reduces the risk of the user initialising the DB in the wrong file,
     # but less modular/DRY.

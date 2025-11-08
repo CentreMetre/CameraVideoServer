@@ -1,9 +1,9 @@
-from db.database import get_db_connection, commit_query, get_db_con_from_short_date
+from db.database import get_db_connection, commit_query, get_db_con_from_short_date, init_db
 from media_types import MediaType
 
 # Database example for imgdata db:
 # +=====================+=====================+===============+
-# |      file_name      |      location       | is_downloaded |
+# |      file_name      |        path         | is_downloaded |
 # +=====================+=====================+===============+
 # | A25102006312300.jpg | 20251020/images000/ | True          |
 # +---------------------+---------------------+---------------+
@@ -15,11 +15,26 @@ from media_types import MediaType
 # is_downloaded (INTEGER) - Boolean (0 or 1) for storing if the file has been downloaded to the local machine/server.
 
 
+def init_image_db(date):
+    """
+    Create an SQLite DB file.
+
+    Creates an SQLite DB file for images on a specific date.
+
+    Parameters
+    ----------
+    date: str
+        The date of the media to create the DB for in the format of yyyymmdd, e.g. 20251023.
+    """
+
+    init_db(date, MediaType.IMAGE)
+
+
 def insert_image_row(full_path):
     """
     Inserts a row in an image DB.
 
-    Inserts and populates a row in the image DB for the provided connection with the file name and location.
+    Inserts and populates a row in the image DB for the provided connection with the file name and path.
 
     Parameters
     ----------
@@ -39,7 +54,7 @@ def insert_image_row(full_path):
     location = f"{date}/{path_sections[-2]}"
 
     insert_query = f"""
-    INSERT INTO images (file_name, location, is_downloaded)
+    INSERT INTO images (file_name, path, is_downloaded)
     VALUES ('{file_name}', '{location}', false);
     """ # is_downloaded is False by default because this is creating the row and no media is downloaded yet.
 
