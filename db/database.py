@@ -121,9 +121,9 @@ def init_db(date, media_type):
 
 def commit_query(connection, query):
     """
-    Util function to commit a query.
+    Util function to commit a query. NOT for retrieving.
 
-    Commits a query with a connection, and then closes the connection. Used for modifying data, not reading data.
+    Commits a query with a connection, and then closes the connection. Used for modifying data, not retrieving data.
 
     Parameters
     ----------
@@ -137,5 +137,5 @@ def commit_query(connection, query):
     connection.close()
 
 # CHOICES
-# Camera should handle camera IO and importantly db file cleaning, not the test_database.py
+# Camera should handle camera IO and importantly db file cleaning, not the test_image_database.py
 # Make each functions open and close their own connections. Makes it safer so that the wrong connection isn't provided.

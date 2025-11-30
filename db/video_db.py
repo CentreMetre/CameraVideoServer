@@ -4,6 +4,7 @@ from db import video_column
 
 
 # Database example for recdata db (best so far):
+# Table name: videos
 # +=======================+===========+===============+=======================+===============+=====================+
 # |       base_name       | on_camera | local_has_265 | local_has_wrapped_265 | local_has_264 |        path         |
 # +=======================+===========+===============+=======================+===============+=====================+
@@ -102,3 +103,24 @@ def update_video_row(base_name, to_update):
         commit_query(con, query)
 
 
+def retrieve_all(date):
+    """
+    Retrieve all rows from a specific date.
+
+    Parameters
+    ----------
+    date: str
+        The date of the media to retrieve from the DB for in the format of yyyymmdd, e.g. 20251023.
+
+    Returns
+    -------
+    list:
+        A list of tuples with the data. Tuple format: (file_name, path, is_downloaded)
+    """
+
+    con = get_db_connection(date, MediaType.IMAGE)
+
+    cur = con.cursor()
+    rows = cur.fetchall()
+
+    return rows

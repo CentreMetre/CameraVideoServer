@@ -57,12 +57,12 @@ CameraVideoServer/
 ### Images
 Database example for imgdata db:
 
-|      file_name      |        path         | is_downloaded |
-|---------------------|---------------------|---------------|
-| A25102006312300.jpg | 20251020/images000/ | True          |
-| A25102006312300.jpg | 20251020/images000/ | False         |
+|      file_name      |        path        | is_downloaded |
+|---------------------|--------------------|---------------|
+| A25102006312300.jpg | 20251020/images000 | True          |
+| A25102006312300.jpg | 20251020/images000 | False         |
 file_name (TEXT) - The name of the file. <br>
-location (TEXT) - The location of the file, excluding the filename.<br>
+path (TEXT) - The location of the file, excluding the filename. Note the lack of a trailing forward slash. <br>
 is_downloaded (INTEGER) - Boolean (0 or 1) for storing whether the file has been downloaded to the local machine/server.
 
 ### Videos

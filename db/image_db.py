@@ -2,16 +2,17 @@ from db.database import get_db_connection, commit_query, get_db_con_from_short_d
 from media_types import MediaType
 
 # Database example for imgdata db:
-# +=====================+=====================+===============+
-# |      file_name      |        path         | is_downloaded |
-# +=====================+=====================+===============+
-# | A25102006312300.jpg | 20251020/images000/ | True          |
-# +---------------------+---------------------+---------------+
-# | A25102006312300.jpg | 20251020/images000/ | False         |
-# +---------------------+---------------------+---------------+
+# Table name: images
+# +=====================+====================+===============+
+# |      file_name      |        path        | is_downloaded |
+# +=====================+====================+===============+
+# | A25102006312300.jpg | 20251020/images000 | True          |
+# +---------------------+--------------------+---------------+
+# | A25102006312300.jpg | 20251020/images000 | False         |
+# +---------------------+--------------------+---------------+
 # NOTE: Existence of an image row indicated if the file is available on the camera, no separate column of that.
 # file_name (TEXT) - The name of the file.
-# location (TEXT) - The location of the file, excluding the filename.
+# path (TEXT) - The location of the file, excluding the filename. Note the lack of a trailing forward slash.
 # is_downloaded (INTEGER) - Boolean (0 or 1) for storing if the file has been downloaded to the local machine/server.
 
 
@@ -51,12 +52,16 @@ def insert_image_row(full_path):
     file_name = path_sections[-1]
 
     # Done like this incase "sd" is prepended
-    location = f"{date}/{path_sections[-2]}"
+    path = f"{date}/{path_sections[-2]}"
 
     insert_query = f"""
     INSERT INTO images (file_name, path, is_downloaded)
-    VALUES ('{file_name}', '{location}', false);
+    VALUES ('{file_name}', '{path}', false);
     """ # is_downloaded is False by default because this is creating the row and no media is downloaded yet.
+
+    # print("")
+    # print("inserting:")
+    # print(f"{file_name} | {path} | false)")
 
     commit_query(con, insert_query)
 
@@ -101,6 +106,33 @@ def delete_image_row(file_name):
     """
 
     commit_query(con, delete_query)
+
+def retrieve_all(date):
+    """
+    Retrieve all rows from a specific date.
+
+    Parameters
+    ----------
+    date: str
+        The date of the media to retrieve from the DB for in the format of yyyymmdd, e.g. 20251023.
+
+
+    Returns
+    -------
+    list:
+        A list of tuples with the data. Tuple format: (file_name, path, is_downloaded)
+
+    """
+
+    con = get_db_connection(date, MediaType.IMAGE)
+
+    cur = con.cursor()
+
+    cur.execute("SELECT * FROM images")
+    rows = cur.fetchall()
+
+    return rows
+
 
 # Possible changes:
 # Add get_db_connection for images so MediaType.IMAGE doesn't have to be used.
